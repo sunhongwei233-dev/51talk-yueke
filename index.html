@@ -612,8 +612,10 @@
     }
     .days button {
       flex-shrink: 0;
-      min-width: 44px;
-      height: 52px;
+      min-width: 40px;
+      width: 40px;
+      height: 56px;
+      padding: 6px 0;
       border-radius: 12px;
       border: 1px solid var(--line);
       background: var(--white);
@@ -623,10 +625,14 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
-      color: var(--muted);
+      gap: 0;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--ink);
+      line-height: 1.2;
       position: relative;
     }
+    .days button span { line-height: 1.2; }
     .days button b { font-size: 13px; color: var(--ink); }
     .days button.on { background: var(--yellow); border-color: var(--yellow); }
     .days button.on b, .days button.on { color: var(--ink); font-weight: 700; }
@@ -1120,6 +1126,10 @@
       { id:"other", label:"其他原因" }
     ];
     const TIMES = ["16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","21:00","22:00"];
+    const TIMES_LONG = ["14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","20:30","21:00","22:00"];
+    function timesForDay(day) {
+      return (day === "周三" || day === "周四") ? TIMES_LONG : TIMES;
+    }
     const UNAVAILABLE = {
       emily: ["周一-16:00","周二-22:00"],
       jammye: ["周三-16:00"],
@@ -1714,7 +1724,7 @@
       const unavail = new Set(UNAVAILABLE[state.teacherId] || []);
       const knownFull = new Set(state.knownFullSlots || []);
       const origin = single ? state.originSlot : null;
-      const grid = TIMES.map(time => {
+      const grid = timesForDay(state.day).map(time => {
         const key = slotKey(state.day, time);
         const taken = occ.has(key);
         const isFull = knownFull.has(key) || (isFree && (FULL_SLOTS[state.teacherId] || []).includes(key));
@@ -1730,7 +1740,7 @@
       const days = DAYS.map(d => {
         const n = badgeKeys.filter(s => s.startsWith(d + "-")).length;
         const badge = n ? `<span class="day-badge">${n}</span>` : "";
-        return `<button class="${state.day===d?"on":""}" onclick="state.day='${d}';render()"><b>${d.slice(1)}</b>周${badge}</button>`;
+        return `<button class="${state.day===d?"on":""}" onclick="state.day='${d}';render()">${[...d].map(ch => `<span>${ch}</span>`).join("")}${badge}</button>`;
       }).join("");
       const originText = origin ? formatSlotsLines([origin])[0] : "";
       const replaceText = !state.slots[0] ? "" : (state.mode === "lessonTime" ? formatOnce(state.slots[0]) : formatSlotsLines(state.slots)[0]);
@@ -2224,7 +2234,7 @@
         const da = DAYS.indexOf(a.split("-")[0]);
         const db = DAYS.indexOf(b.split("-")[0]);
         if (da !== db) return da - db;
-        return TIMES.indexOf(a.split("-")[1]) - TIMES.indexOf(b.split("-")[1]);
+        return TIMES_LONG.indexOf(a.split("-")[1]) - TIMES_LONG.indexOf(b.split("-")[1]);
       });
       render();
     }
