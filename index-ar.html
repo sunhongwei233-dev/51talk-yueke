@@ -1,0 +1,2308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>51Talk الحصص الثابتة · نموذج تفاعلي</title>
+  <style>
+    :root {
+      --yellow: #FFD100;
+      --yellow-press: #F0C400;
+      --ink: #1A1A1A;
+      --muted: #8A8A8A;
+      --sub: #5C5C5C;
+      --line: #EEEEEE;
+      --bg: #F5F5F5;
+      --white: #FFFFFF;
+      --green: #2BB673;
+      --danger: #E85D4C;
+      --blue: #3B82F6;
+      --radius: 16px;
+      --phone-w: 375px;
+      --phone-h: 812px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Segoe UI", "Noto Naskh Arabic", "Tahoma", "Arial", sans-serif;
+      background: #E8E4DC;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      min-height: 100%;
+      padding: 24px;
+    }
+    .guide {
+      display: none;
+      width: 320px;
+      color: #3A362E;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+    .guide h1 { font-size: 22px; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .guide p { margin-bottom: 12px; color: #5C564C; }
+    .guide ol { padding-left: 18px; color: #5C564C; }
+    .guide li { margin: 6px 0; }
+    .guide kbd {
+      background: #fff;
+      border: 1px solid #D9D3C7;
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-size: 12px;
+    }
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      background: var(--white);
+      border-radius: 36px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.18);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      border: 8px solid #1A1A1A;
+      display: flex;
+      flex-direction: column;
+    }
+    .status {
+      height: 44px;
+      padding: 12px 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--white);
+      flex-shrink: 0;
+    }
+    .status .dots { letter-spacing: 2px; font-size: 11px; }
+    .app {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+    }
+    .screen { display: none; height: 100%; flex-direction: column; }
+    .screen.on { display: flex; }
+    .nav, .tabs, .bottom-nav, .dock, .stepper, .hint, .search, .locked, .credits, .composer, .days, .month-row, .week-row, .quick.bottom {
+      flex-shrink: 0;
+    }
+    .nav {
+      height: 44px;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      padding: 0 8px 0 4px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .nav .back, .nav .right {
+      min-width: 88px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      color: var(--sub);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .nav .back { justify-content: flex-start; padding-left: 8px; font-size: 22px; color: var(--ink); min-width: 44px; }
+    .nav .title { flex: 1; text-align: center; font-size: 17px; font-weight: 650; }
+    .nav .right { justify-content: flex-end; color: var(--sub); }
+    .tabs {
+      display: flex;
+      background: var(--white);
+      padding: 0 8px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .tabs button {
+      flex: 1;
+      height: 42px;
+      border: none;
+      background: none;
+      font-size: 15px;
+      color: var(--muted);
+      font-family: inherit;
+      cursor: pointer;
+      position: relative;
+      font-weight: 500;
+    }
+    .tabs button.active { color: var(--ink); font-weight: 700; }
+    .tabs button.active::after {
+      content: "";
+      position: absolute;
+      left: 28%;
+      right: 28%;
+      bottom: 0;
+      height: 3px;
+      background: var(--yellow);
+      border-radius: 3px 3px 0 0;
+    }
+    .scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .phone * {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .phone *::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+    .bottom-nav {
+      height: 64px;
+      background: var(--white);
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-shrink: 0;
+      padding-bottom: 8px;
+    }
+    .bottom-nav button {
+      flex: 1;
+      border: none;
+      background: none;
+      font-family: inherit;
+      font-size: 10px;
+      color: #999;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+    .bottom-nav button.active { color: #C9A100; font-weight: 700; }
+    .bottom-nav .ico { font-size: 20px; line-height: 1; }
+    .msg-row {
+      display: flex; align-items: center; gap: 12px;
+      width: 100%; padding: 12px 16px;
+      background: var(--white); border: none; border-bottom: 1px solid #F3F3F3;
+      font-family: inherit; text-align: left; cursor: pointer; color: inherit;
+    }
+    .msg-ico {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0; font-weight: 800; color: #fff;
+    }
+    .msg-ico.round { border-radius: 50%; font-size: 13px; color: var(--ink); }
+    .msg-mid { flex: 1; min-width: 0; }
+    .msg-title { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .msg-preview { font-size: 12px; color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .msg-time { font-size: 11px; color: #C0C0C0; flex-shrink: 0; align-self: flex-start; padding-top: 2px; }
+    .advisor-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; background: var(--white);
+      box-shadow: 0 -4px 16px rgba(0,0,0,.04);
+      flex-shrink: 0;
+    }
+    .advisor-bar .av {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--yellow); display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; flex-shrink: 0;
+    }
+    .advisor-bar .nm { font-size: 14px; font-weight: 700; }
+    .advisor-bar .role { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .advisor-bar .acts { margin-left: auto; display: flex; gap: 8px; }
+    .wa-btn {
+      height: 40px; padding: 0 14px; border-radius: 20px;
+      background: #25D366; color: #fff; border: none;
+      font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+      white-space: nowrap;
+    }
+    .wa-preview {
+      background: var(--bg); border-radius: 12px; padding: 12px;
+      font-size: 13px; color: var(--sub); line-height: 1.55; margin: 4px 0 12px;
+    }
+    .sheet.slots-sheet .btn-wa {
+      width: 100%; margin-top: 4px; height: 48px;
+      border: none; border-bottom: none; border-radius: 24px;
+      background: #25D366; color: #fff; font-weight: 700;
+    }
+    .pad { padding: 16px; }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 48px;
+      border-radius: 24px;
+      border: none;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-primary { background: var(--yellow); color: var(--ink); }
+    .btn-primary:disabled { background: #F0F0F0; color: #BBB; cursor: not-allowed; }
+    .btn-ghost {
+      background: var(--white);
+      color: var(--ink);
+      border: 1px solid #E5E5E5;
+      font-weight: 600;
+    }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:disabled { background: #F0F0F0; color: #BBB; cursor: not-allowed; }
+    .btn-danger-ghost {
+      background: var(--white);
+      color: var(--danger);
+      border: 1.5px solid var(--danger);
+      font-weight: 700;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      font-weight: 650;
+    }
+    .empty { text-align: center; padding: 16px 20px 12px; }
+    .illus { width: 120px; height: 88px; margin: 0 auto 8px; }
+    .empty h2 { font-size: 18px; margin-bottom: 6px; }
+    .empty .desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+    .benefits {
+      text-align: left;
+      background: var(--white);
+      border-radius: 16px;
+      padding: 6px 12px 8px;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+    .benefits .cap {
+      font-size: 13px;
+      font-weight: 700;
+      color: #8A6D00;
+      padding: 8px 4px 4px;
+    }
+    .whatis .body {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.65;
+      padding: 4px 4px 10px;
+    }
+    .ben {
+      display: flex;
+      gap: 10px;
+      padding: 8px 4px;
+      align-items: flex-start;
+    }
+    .ben + .ben { border-top: 1px solid #F3F3F3; }
+    .ben .n {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #FFF6C2; color: #8A6D00;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .ben .t { font-size: 14px; font-weight: 700; }
+    .ben .d { font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+    .steps-preview {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 16px;
+    }
+    .sp {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 92px;
+      position: relative;
+    }
+    .sp .n {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #FFF6C2; color: #8A6D00;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+    }
+    .sp span { font-size: 12px; color: var(--sub); margin-top: 6px; }
+    .sp + .sp::before {
+      content: "";
+      position: absolute;
+      left: -22px; top: 13px;
+      width: 44px; height: 1.5px;
+      background: #E8D98A;
+    }
+    .stepper {
+      display: flex;
+      padding: 12px 16px 8px;
+      background: var(--white);
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .st { flex: 1; text-align: center; font-size: 12px; color: var(--muted); }
+    .st .bar { height: 4px; background: #EEE; border-radius: 4px; margin-bottom: 6px; }
+    .st.on { color: var(--ink); font-weight: 650; }
+    .st.on .bar { background: var(--yellow); }
+    .st.done .bar { background: var(--yellow); }
+    .hint em {
+      font-style: normal;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--yellow);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .hint {
+      margin: 12px 16px 0;
+      background: #FFF8D6;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #6B5A00;
+      line-height: 1.5;
+    }
+    .search {
+      margin: 12px 16px 8px;
+      height: 40px;
+      border-radius: 20px;
+      background: var(--white);
+      border: 1px solid #E5E5E5;
+      padding: 0 14px;
+      width: calc(100% - 32px);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--ink);
+    }
+    .search::placeholder { color: #B0B0B0; }
+    .search:focus {
+      outline: none;
+      border-color: #E8C200;
+      background: var(--white);
+    }
+    .sec-title {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 16px 8px;
+      color: var(--ink);
+    }
+    .tcard {
+      margin: 0 16px 10px;
+      background: var(--white);
+      border-radius: 12px;
+      padding: 0;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid #F0E6C8;
+    }
+    .tcard:active { border-color: var(--yellow); }
+    .tcard-main {
+      display: flex;
+      gap: 10px;
+      padding: 12px 12px 10px;
+      align-items: flex-start;
+    }
+    .avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      background: #EEE;
+    }
+    .avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    .badge-fav {
+      position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+      background: var(--yellow); font-size: 9px; padding: 1px 5px; border-radius: 8px;
+      white-space: nowrap; font-weight: 700;
+    }
+    .tmeta { flex: 1; min-width: 0; }
+    .name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tmeta .name { font-size: 15px; font-weight: 700; flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .play {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #FF8A3D; color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 8px; flex-shrink: 0; line-height: 1;
+    }
+    .tags { margin-top: 8px; display: flex; gap: 4px; flex-wrap: wrap; }
+    .tag {
+      font-size: 11px; background: #F4F4F4; color: var(--sub);
+      padding: 3px 7px; border-radius: 4px;
+    }
+    .rate {
+      color: #E85D4C;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tcard-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFF6E4;
+      padding: 8px 0 8px 12px;
+      font-size: 11px;
+      color: var(--sub);
+    }
+    .tcard-bar .sep { width: 1px; height: 12px; background: #E8D9B0; }
+    .tcard-bar .cert { color: #E48A2C; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .book-btn {
+      margin-left: auto;
+      height: 32px;
+      padding: 0 12px;
+      border: none;
+      background: var(--yellow);
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      border-radius: 16px 0 0 16px;
+      white-space: nowrap;
+    }
+    .detail-nav .right {
+      min-width: 88px;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--ink);
+    }
+    .detail-nav .heart { color: #E85D4C; font-weight: 700; }
+    .hero {
+      height: 180px;
+      background: #2A2A2A center/cover no-repeat;
+      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero .play-lg {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(255,255,255,.9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: #E85D4C; cursor: pointer; border: none;
+    }
+    .hero .brand {
+      position: absolute; left: 12px; top: 10px;
+      color: #fff; font-size: 12px; font-weight: 700;
+    }
+    .hero .sub {
+      position: absolute; left: 12px; right: 12px; bottom: 10px;
+      color: #fff; font-size: 11px; line-height: 1.4;
+      text-shadow: 0 1px 4px rgba(0,0,0,.6);
+    }
+    .profile-card {
+      margin: -28px 12px 0;
+      background: var(--white);
+      border-radius: 12px;
+      padding: 14px 14px 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .profile-card .top { display: flex; gap: 10px; align-items: center; }
+    .profile-card .nm { font-size: 17px; font-weight: 700; }
+    .profile-card .meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .voice {
+      margin-left: auto;
+      width: 44px; height: 28px; border-radius: 14px;
+      background: #4DA3FF; border: none; color: #fff; cursor: pointer;
+      font-size: 14px;
+    }
+    .stats {
+      display: flex;
+      margin-top: 14px;
+      text-align: center;
+    }
+    .stats div { flex: 1; }
+    .stats .n { font-size: 20px; font-weight: 700; }
+    .stats .l { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .stats .split { width: 1px; background: var(--line); }
+    .sec {
+      background: var(--white);
+      margin-top: 8px;
+      padding: 14px 16px;
+    }
+    .sec h3 { font-size: 15px; margin-bottom: 10px; }
+    .sec h3 .more { float: right; font-size: 12px; color: var(--muted); font-weight: 500; }
+    .vids { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+    .vids .v {
+      flex-shrink: 0; width: 140px; height: 88px;
+      border-radius: 8px; background: #DDD center/cover no-repeat;
+      position: relative;
+    }
+    .vids .v::after {
+      content: "▶";
+      position: absolute; right: 8px; bottom: 8px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(0,0,0,.45); color: #fff;
+      font-size: 10px; display: flex; align-items: center; justify-content: center;
+    }
+    .bio { font-size: 13px; color: var(--sub); line-height: 1.65; }
+    .bio.clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .expand { text-align: right; font-size: 12px; color: var(--muted); margin-top: 6px; border: none; background: none; font-family: inherit; cursor: pointer; width: 100%; }
+    .cert-row {
+      display: flex; align-items: center; gap: 8px; font-size: 13px;
+    }
+    .cert-row .ok { color: #2BB673; font-size: 16px; }
+    .cert-row .view { margin-left: auto; color: var(--muted); font-size: 12px; }
+    .imp-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .imp-tags span {
+      background: #E8F3FF; color: #3B82F6;
+      font-size: 12px; padding: 4px 10px; border-radius: 14px;
+    }
+    .rev { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line); }
+    .rev .av { width: 32px; height: 32px; border-radius: 50%; background: #EEE; flex-shrink: 0; overflow: hidden; }
+    .rev .av img { width: 100%; height: 100%; object-fit: cover; }
+    .rev .who { font-size: 13px; font-weight: 650; }
+    .rev .when { font-size: 11px; color: var(--muted); float: right; font-weight: 400; }
+    .rev .txt { font-size: 13px; color: var(--sub); margin-top: 4px; }
+    .locked {
+      margin: 8px 16px 0;
+      background: var(--white);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .locked .chg {
+      margin-left: auto; border: none; background: none;
+      color: #C9A100; font-weight: 650; font-size: 13px; cursor: pointer; font-family: inherit;
+    }
+    .days {
+      display: flex;
+      gap: 4px;
+      padding: 12px 10px 14px;
+      overflow-x: auto;
+      overflow-y: visible;
+    }
+    .days button {
+      flex-shrink: 0;
+      min-width: 52px;
+      height: 52px;
+      padding: 0 4px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--white);
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--muted);
+      position: relative;
+    }
+    .days button b {
+      font-size: 11px;
+      color: var(--ink);
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .days button.on { background: var(--yellow); border-color: var(--yellow); }
+    .days button.on b, .days button.on { color: var(--ink); font-weight: 700; }
+    .day-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      border-radius: 8px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 16px;
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 12px 16px 24px;
+    }
+    .slot {
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--white);
+      font-family: inherit;
+      font-size: 14px;
+      cursor: pointer;
+      position: relative;
+    }
+    .slot.on { background: var(--yellow); border-color: var(--yellow); font-weight: 700; }
+    .slot.off { background: #F3F3F3; color: #C0C0C0; cursor: not-allowed; }
+    .slot.cur { background: #FFF8D6; border-color: #E8C200; font-weight: 650; }
+    .slot .now {
+      position: absolute; top: -6px; right: -6px;
+      background: #C9A100; color: #fff;
+      font-size: 9px; padding: 1px 4px; border-radius: 6px; font-weight: 700;
+    }
+    .slot .rec {
+      position: absolute; top: -5px; right: -5px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--ink); color: var(--yellow);
+      font-size: 9px; display: flex; align-items: center; justify-content: center;
+    }
+    .dock {
+      background: var(--white);
+      padding: 10px 16px 16px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .dock .count { font-size: 13px; color: var(--sub); flex: 1; }
+    .dock .count.tap {
+      border: none;
+      background: none;
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+      font-weight: 650;
+      color: var(--ink);
+      padding: 4px 0;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dock .count.tap .chev {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--yellow);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 4px;
+      flex-shrink: 0;
+    }
+    .dock .btn { width: auto; min-width: 148px; padding: 0 20px; }
+    .dock.full .btn { width: 100%; min-width: 0; }
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      margin: 12px 16px;
+      padding: 16px;
+    }
+    .row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; font-size: 14px; align-items: center; }
+    .row .k { color: var(--muted); }
+    .teacher-val { display: flex; align-items: center; gap: 8px; font-weight: 650; }
+    .teacher-val .avatar { width: 36px; height: 36px; }
+    .rule {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+    .rule .t { font-size: 15px; font-weight: 700; }
+    .rule .s { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      margin-top: 12px;
+    }
+    .success { text-align: center; padding: 36px 24px 8px; }
+    .ok {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--green); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; margin: 0 auto 12px;
+    }
+    .pcard {
+      background: var(--white);
+      border-radius: var(--radius);
+      margin: 12px 16px;
+      padding: 14px;
+    }
+    .pcard.paused { opacity: .72; }
+    .phead { display: flex; gap: 10px; align-items: center; }
+    .phead .more {
+      margin-left: auto; border: none; background: none;
+      font-size: 20px; cursor: pointer; color: var(--muted); padding: 4px 8px;
+    }
+    .status-chip {
+      font-size: 11px; background: #EAF8F0; color: var(--green);
+      padding: 2px 8px; border-radius: 8px; font-weight: 650;
+    }
+    .status-chip.pause { background: #F4F4F4; color: var(--muted); }
+    .ptimes { margin: 10px 0 8px; font-size: 15px; font-weight: 650; line-height: 1.5; }
+    .pmeta { font-size: 12px; color: var(--muted); }
+    .pacts { display: flex; gap: 8px; margin-top: 12px; }
+    .pacts button {
+      flex: 1; height: 36px; border-radius: 18px;
+      border: 1px solid #E5E5E5; background: var(--white);
+      font-family: inherit; font-size: 13px; font-weight: 650; cursor: pointer;
+    }
+    .month-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px 4px; background: var(--white); font-size: 15px; font-weight: 700;
+    }
+    .go-book {
+      border: none; background: #3B82F6; color: #fff;
+      height: 28px; padding: 0 12px; border-radius: 14px;
+      font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer;
+    }
+    .week-row {
+      display: flex; gap: 4px; padding: 8px 10px 12px; background: var(--white);
+      border-bottom: 1px solid var(--line);
+    }
+    .wd {
+      flex: 1; text-align: center; border: none; background: none;
+      font-family: inherit; cursor: pointer; padding: 4px 0; color: var(--muted); font-size: 11px;
+    }
+    .wd .n {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 4px auto 2px; font-size: 14px; font-weight: 700; color: var(--ink);
+    }
+    .wd.on .n { background: var(--yellow); }
+    .wd .dot {
+      width: 4px; height: 4px; border-radius: 50%; background: transparent; margin: 0 auto;
+    }
+    .wd.has .dot { background: #3B82F6; }
+    .lcard {
+      background: var(--white); border-radius: 12px; margin: 10px 16px; padding: 12px;
+      cursor: pointer;
+    }
+    .lcard-top { display: flex; gap: 12px; }
+    .ltime { width: 76px; flex-shrink: 0; }
+    .ltime .hm { font-size: 20px; font-weight: 700; }
+    .ltime .dt { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.3; }
+    .ltime .tag-fixed { margin: 6px 0 0; }
+    .lbody { flex: 1; min-width: 0; }
+    .ltitle { font-size: 14px; font-weight: 650; line-height: 1.4; }
+    .tag-fixed {
+      display: inline-block; background: var(--yellow); color: var(--ink);
+      font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;
+      vertical-align: middle;
+    }
+    .llevel { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .lteacher { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; font-weight: 650; }
+    .lteacher .avatar { width: 24px; height: 24px; }
+    .lnote { font-size: 11px; color: var(--muted); margin-top: 8px; }
+    .lacts {
+      display: flex; justify-content: flex-end; gap: 14px;
+      margin-top: 8px; padding-top: 8px; border-top: 1px solid #F3F3F3;
+    }
+    .lacts button {
+      border: none; background: none; padding: 4px 2px;
+      font-family: inherit; font-size: 11px; font-weight: 400;
+      color: #B8B8B8; cursor: pointer; height: auto; flex: none;
+    }
+    .linkish {
+      border: none; background: none; color: var(--muted); font-size: 13px;
+      font-family: inherit; cursor: pointer; padding: 8px 0 0; width: 100%; text-align: center;
+    }
+    .mask {
+      position: absolute; inset: 0; background: rgba(0,0,0,.4);
+      display: none; align-items: flex-end; z-index: 20;
+    }
+    .mask.on { display: flex; }
+    .mask.center { align-items: center; justify-content: center; padding: 24px; }
+    .dialog {
+      background: var(--white);
+      width: 100%;
+      border-radius: 16px;
+      padding: 20px 16px 16px;
+    }
+    .dialog-title { font-size: 17px; font-weight: 700; text-align: center; }
+    .dialog-sub { font-size: 12px; color: var(--muted); text-align: center; margin-top: 6px; }
+    .swap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 18px 0 12px;
+    }
+    .swap-side { flex: 1; text-align: center; }
+    .swap-side .avatar { width: 52px; height: 52px; margin: 0 auto 8px; }
+    .swap-side .lab { font-size: 11px; color: var(--muted); }
+    .swap-side .nm { font-size: 14px; font-weight: 700; margin-top: 2px; }
+    .swap-arrow { font-size: 22px; color: #C9A100; font-weight: 700; padding-bottom: 18px; }
+    .swap.stack {
+      flex-direction: column;
+      gap: 6px;
+    }
+    .swap.stack .swap-side {
+      width: 100%;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+    .swap.stack .swap-arrow {
+      padding: 0;
+      line-height: 1;
+    }
+    .dialog-note { font-size: 12px; color: var(--sub); text-align: center; line-height: 1.5; margin-bottom: 16px; }
+    .dialog-acts { display: flex; gap: 10px; }
+    .dialog-acts .btn { flex: 1; }
+    .cancel-page { background: var(--white); height: 100%; display: flex; flex-direction: column; }
+    .cancel-page .nav .title { font-size: 16px; }
+    .csec { padding: 16px 16px 4px; }
+    .csec-h {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 14px; font-weight: 700; margin-bottom: 10px;
+    }
+    .csec-h .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--danger); flex-shrink: 0;
+    }
+    .cinfo {
+      display: flex; align-items: center; gap: 10px;
+      background: #FFF1F0; border-radius: 12px; padding: 12px;
+    }
+    .cinfo .avatar { width: 44px; height: 44px; }
+    .cinfo .when { font-size: 14px; font-weight: 700; }
+    .cinfo .who { font-size: 12px; color: var(--sub); margin-top: 4px; }
+    .cnote { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+    .reason {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F3F3;
+      width: 100%; background: none; border-left: none; border-right: none; border-top: none;
+      font-family: inherit; font-size: 14px; text-align: left; cursor: pointer; color: var(--ink);
+    }
+    .reason .radio {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1.5px solid #DDD; flex-shrink: 0; position: relative;
+    }
+    .reason.on .radio {
+      border-color: var(--danger); background: var(--danger);
+    }
+    .reason.on .radio::after {
+      content: "✓"; position: absolute; inset: 0;
+      color: #fff; font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .reason-other {
+      width: 100%; min-height: 88px; border: none; resize: none;
+      background: #F5F5F5; border-radius: 10px; padding: 12px;
+      font-family: inherit; font-size: 13px; color: var(--ink);
+      margin: 8px 0 4px;
+    }
+    .reason-other:focus { outline: none; background: #EFEFEF; }
+    .cancel-dock {
+      display: flex; gap: 12px; padding: 12px 16px 20px;
+      background: var(--white); flex-shrink: 0;
+    }
+    .cancel-dock .btn { flex: 1; }
+    .sheet {
+      background: var(--white);
+      width: 100%;
+      border-radius: 16px 16px 0 0;
+      padding: 8px 16px 28px;
+    }
+    .sheet button {
+      width: 100%; height: 50px; border: none; background: none;
+      font-family: inherit; font-size: 16px; cursor: pointer;
+      border-bottom: 1px solid var(--line);
+    }
+    .sheet button.danger { color: var(--danger); }
+    .sheet button.cancel { border: none; color: var(--muted); margin-top: 8px; background: var(--bg); border-radius: 12px; }
+    .sheet.slots-sheet { padding: 10px 16px 20px; max-height: 70%; display: flex; flex-direction: column; }
+    .sheet.slots-sheet .btn-primary {
+      width: 100%;
+      margin-top: 12px;
+      height: 48px;
+      border: none;
+      border-bottom: none;
+      background: var(--yellow);
+      color: var(--ink);
+      font-weight: 700;
+      border-radius: 24px;
+    }
+    .grab {
+      width: 36px; height: 4px; border-radius: 2px;
+      background: #DDD; margin: 4px auto 10px;
+    }
+    .sheet-head { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .slot-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .slot-row .t { font-size: 15px; font-weight: 650; }
+    .slot-row .s { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .slots-list { overflow-y: auto; min-height: 0; }
+    .toast {
+      position: absolute; left: 50%; bottom: 88px; transform: translateX(-50%);
+      background: rgba(26,26,26,.88); color: #fff;
+      padding: 10px 16px; border-radius: 20px;
+      font-size: 13px; display: none; z-index: 30; white-space: nowrap;
+    }
+    .toast.on { display: block; }
+    .chat { padding: 16px; }
+    .bubble {
+      background: var(--white);
+      border-radius: 12px 12px 12px 4px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.55;
+      margin-bottom: 10px;
+      max-width: 88%;
+    }
+    .bubble.me {
+      margin-left: auto;
+      background: #FFF4B0;
+      border-radius: 12px 12px 4px 12px;
+    }
+    .quick { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 16px; }
+    .quick.bottom {
+      margin: 0; padding: 10px 12px 8px;
+      background: var(--white); border-top: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .quick button {
+      border: 1px solid #E5E5E5; background: var(--white);
+      border-radius: 16px; padding: 6px 10px;
+      font-size: 12px; font-family: inherit; cursor: pointer;
+    }
+    .composer {
+      display: flex; gap: 8px; padding: 10px 12px 16px;
+      background: var(--white); border-top: 1px solid var(--line);
+    }
+    .composer input {
+      flex: 1; height: 40px; border-radius: 20px; border: none;
+      background: var(--bg); padding: 0 14px; font-family: inherit; font-size: 14px;
+    }
+    .composer button {
+      width: 64px; height: 40px; border-radius: 20px; border: none;
+      background: var(--yellow); font-weight: 700; font-family: inherit; cursor: pointer;
+    }
+    .ph { text-align: center; color: var(--muted); padding: 80px 24px; font-size: 14px; }
+    .credits {
+      font-size: 12px; color: var(--muted); padding: 10px 16px 0;
+    }
+    .credits b { color: #C9A100; }
+    .current-mark { font-size: 11px; color: var(--muted); }
+
+    html[dir="rtl"] .phone { direction: rtl; }
+    html[dir="rtl"] .benefits,
+    html[dir="rtl"] .msg-row,
+    html[dir="rtl"] .dock .count.tap,
+    html[dir="rtl"] .expand,
+    html[dir="rtl"] .reason { text-align: start; }
+    html[dir="rtl"] .book-btn {
+      margin-left: 0; margin-right: auto;
+      border-radius: 0 16px 16px 0;
+    }
+    html[dir="rtl"] .locked .chg,
+    html[dir="rtl"] .phead .more,
+    html[dir="rtl"] .voice,
+    html[dir="rtl"] .advisor-bar .acts,
+    html[dir="rtl"] .cert-row .view { margin-left: 0; margin-right: auto; }
+    html[dir="rtl"] .hero .brand { left: auto; right: 12px; }
+    html[dir="rtl"] .sec h3 .more { float: left; }
+    html[dir="rtl"] .rev .when { float: left; }
+    html[dir="rtl"] .sp + .sp::before { left: auto; right: -22px; }
+    html[dir="rtl"] .day-badge,
+    html[dir="rtl"] .slot .now,
+    html[dir="rtl"] .slot .rec { right: auto; left: -6px; }
+    html[dir="rtl"] .tcard-bar { padding: 8px 12px 8px 0; }
+    html[dir="rtl"] .nav .back { padding-left: 0; padding-right: 8px; direction: ltr; }
+    html[dir="rtl"] .bubble.me { margin-left: 0; margin-right: auto; }
+    html[dir="rtl"] .search { text-align: start; }
+    html[dir="rtl"] .toast { white-space: normal; max-width: 80%; text-align: center; }
+    html[dir="rtl"] .ltime { text-align: start; width: 92px; }
+    html[dir="rtl"] .dock .btn { min-width: 132px; font-size: 14px; }
+    html[dir="rtl"] .pacts button { font-size: 12px; }
+    html[dir="rtl"] .bottom-nav button { font-size: 10px; }
+      @media (max-width: 860px) {
+      body { flex-direction: column; align-items: center; padding: 16px 12px 32px; }
+      .guide { width: min(375px, 100%); }
+    }
+  </style>
+</head>
+<body>
+  <aside class="guide">
+    <h1>نموذج الحصص الثابتة</h1>
+    <p>نسخة عربية (من اليمين لليسار). المسار المقترح:</p>
+    <ol>
+      <li>من الصفحة الفارغة اضغط <kbd>إعداد حصص ثابتة</kbd></li>
+      <li>المفضّلون في الأعلى، اختر معلماً</li>
+      <li>اختر مواعيد أسبوعية ثم أكّد</li>
+      <li>بعدها يمكن تغيير المعلم أو الموعد</li>
+      <li>تواصل مع المشرف التعليمي من الزر أسفل الصفحة</li>
+    </ol>
+    <p>التفاصيل في <strong>方案.md</strong>.</p>
+  </aside>
+
+  <div class="phone">
+    <div class="status">
+      <span>9:41</span>
+      <span class="dots">●●● 100%</span>
+    </div>
+    <div class="app" id="app"></div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    const PHOTOS = {
+      anna: "data:image/jpeg;base64,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",
+      bek: "data:image/jpeg;base64,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",
+      emily: "data:image/jpeg;base64,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",
+      jammye: "data:image/jpeg;base64,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",
+      melvie: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4gIcSUNDX1BST0ZJTEUAAQEAAAIMbGNtcwIQAABtbnRyUkdCIFhZWiAH3AABABkAAwApADlhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApkZXNjAAAA/AAAAF5jcHJ0AAABXAAAAAt3dHB0AAABaAAAABRia3B0AAABfAAAABRyWFlaAAABkAAAABRnWFlaAAABpAAAABRiWFlaAAABuAAAABRyVFJDAAABzAAAAEBnVFJDAAABzAAAAEBiVFJDAAABzAAAAEBkZXNjAAAAAAAAAANjMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0ZXh0AAAAAEZCAABYWVogAAAAAAAA9tYAAQAAAADTLVhZWiAAAAAAAAADFgAAAzMAAAKkWFlaIAAAAAAAAG+iAAA49QAAA5BYWVogAAAAAAAAYpkAALeFAAAY2lhZWiAAAAAAAAAkoAAAD4QAALbPY3VydgAAAAAAAAAaAAAAywHJA2MFkghrC/YQPxVRGzQh8SmQMhg7kkYFUXdd7WtwegWJsZp8rGm/fdPD6TD////bAEMACAYGBwYFCAcHBwkJCAoMFA0MCwsMGRITDxQdGh8eHRocHCAkLicgIiwjHBwoNyksMDE0NDQfJzk9ODI8LjM0Mv/bAEMBCQkJDAsMGA0NGDIhHCEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMv/AABEIAIAAgAMBIgACEQEDEQH/xAAcAAAABwEBAAAAAAAAAAAAAAAAAQMEBQYHAgj/xAA7EAACAQMCAwUFBgUDBQAAAAABAgMABBEFIQYSMRMiQVFhFDJxgZEHI0KhscFS0eHw8RUWYiQzgoOS/8QAGQEAAwEBAQAAAAAAAAAAAAAAAAIDAQQF/8QAHxEAAwEAAwEBAAMAAAAAAAAAAAERAgMhMRIiBEFh/9oADAMBAAIRAxEAPwC/ijoqOqCAo6FCsAFCjoUAChkedcySLEjO7BVAySegFZbxV9p3LO9joo52BwZ+v0rG4Mk2afLPFEuXdVA8zUd/uDT+1K9vkeLDcD51g8usalfTf9TeyTOx6FulT+kOQgEgypOzj8waV7hRcZr8es6dKgdbuIqTjm5ts085gehrHL+WKMBQeXHu/wANONJ44udJkjgmYz267cj+8B/xP7GhbFfGzXDRGmem6nbarZpc2sqvGw6j+XhTunEYKGM0Ros0GCo6UYoqMUACjoUKADoqGai+IL72PTiqMFlmPZqfLPU/TNY3DUq4ilcf67cXbpounScpn95/SoUfZjqFjojXqI0hz96Md4L5ip/gLTBxHxbca1LGGtIXKQA9MKcD9Ca2xUAXGBiuV7bZ3fCyjzA3CsiorIcOu6t0z/Wp3TYBNZ8wUJcJtIvUH+lWzjLhnUtJvX1HSV9pspG5pLYjvRn/AInxFV2OZQfaY1KPjEsbDH1rbQ+YqQWsGMDf4YqrXbKQVHeA3B8xUlxBd8ly/ZnMTjofCq8JufIHhuPhVCbJ7hTi654f1VSWZ7ZziRP4h/MVvVleQahZxXVs4eKReZSPKvL7x5wc75ODWo/ZTxAxaTSpX7p7yAnof602WS2jVjRGh6UDVCIrR0VHQaCjoqOgAeFZx9o+rm1lESNukWBjwLZ/PANaPWHfaDcNd6/eRjOFbA/+alyuIv8Ax83RofAmh69pnBthdWt3HEXUzezcgywY5GSfTwrStL1Fry1Bni7KddnXw+IrNtFa+k0h9SvtTe0stOtoUWGONWLkqPe5uig43qz8Ia0OI7VbuNGiU9VYY9M4+VQ8VOlx9P8Aost9PAkLmQryY3zWR8Tazp095JbafZTTyrsWX+96tXFF3PNrMGk2svKZvfbyFQuo2EmiaNJrtrNEtkmB20rBBIScZBwTg+e1Yv07B+sZ7fpjmv209rdvHKjxHHOquMEA1AN3UDg7q2DV94t1NNeijuOwMV5bDlkBIIdD0II6iqIRkSL4Opx8v7FVTb9IbST6O2w0ZI8N6kuEr42PEVtNkgdpynHrUXbENEQevLXemHl1CNh17QEflWiM9Qq3MobzGaBpOA5gjOc5QHPypQ1c5hajrmjoAOhQoUAHWRa7pTXPHcNuy5S8lQL64wG/StcPSqnqtui8bcP3JGBDd5P/AJDH61LlVyX4NTZfl4ZsnWNwoSQRiNmUe8PI+dO4rSDTbdkhHKAMlsdaWhuD+VQercTWlpFepJFNzQ7EmMhTnyPQ1zKQ6ppuMpN3qYm4xadc4XuCpzijQG4j0KOyUIbdCJI4+gU/L9KzlNYtbi+bU4pcxrOFdfLfH71rdheLFZrnfbas8fRZ5plEnA91aCX2x15W7qrHsFFZjdRezyvEdjHIRXoHiXUVKNkjO+KwXiIiO/l5duZy31p8NtkuVRdkVE/IQPIYpWzbs7pW8mz+9M4iWb1Oad2hAvI+fZSQG/SrQ5U6em9MmE2nW7g5zGP0p0elVrgm5M2gRxufvbdjE/yNWU9KqiD9FgaOua6FaYCjoqOgAVUeNm7CGO5VsMpGD6g5Bq2mqX9oMgXToc43Yml2qinG/wBF64f1tNV0S0vlIxMgLY8G6EfUGnVxrGjurw3FxAU/EHOQf5/Ksu+yLWPaRqmgysfuZDPCT/A3vD5H9ass0Pt+uCDt29k01DNFHyLiOQjlUA438W38q42o4z0eNLarGesWGh+0NJHDDjm5iOXG/hkUo+qRG3XsyAMVQuIxrF+8+pjVoJXtCY2BxG02BkkIPAeJ+NDTdSaXSA8hw7Dp5UPPVKv86g61bUzPcNvlR0rN+KGDXqYPebrVqu7pIld2PhVLaT/UdYUtumfyqmFDk59VQVtrEJYR3Od2yf5Um8XZ3gA3XIx8D0qVuxypbWqZBwBj4n/NNCgN2yAdFA+n94qtpCTo2DhGYwX6qT3by3V//YmAfqMGrufOqFY80MehXKbKXCk/Ff8AFXwHIB86dEdei1ChQphTqhXNE4ypGcGgAlmiclVkUsOozv8ASs++0i5HLDB5Ix/KrryntCVSPb8TL/frTbUNHsNTjIvrRJcDHMeuPQ1jVQ2XHSnfZHZRWWkahxFcLiWbMEbnwjUZc/NsfSrpLnSeHLmZgDc3RMz56jI7q4+H6muUsba04fi0eyiWC1iXkG5Ylc5OfU5P1p1dmC9u7ZWyLaKUSycw3PL7o+Getc28ap38fNx/MpTuMtMstC4TtI3t4xfzQCOSU+/3u8w+pIrO4LoxxFc7VqPEtjNr+r3FxLZrcwWtuXiimfkSSQtjGQQTgcx+lY1qd1HZ3M0S7FHIC5zjfpWJPwpyaqWm6ca1ffddmp3PWmvD1sZr8Ejugb0yiSXUbrG5z19Ktml2q2kOFxzHcn0FUXXRyv8AT+hnOhbWjI3uxbnB8hgU0Rg18oP4m6+hNO5pPvZCCCzmmKAe3R5OBzAH64pkKzW4wf8Aa9uy7tBKGHy/oavETiSFHH4lB+tVOOAtpksBwBJCCvxx/j6VP6JP2+jWknU9koPxAx+1OvSOiVzR5rnNHmmEOqJslSB4iizR5oAQ5SoVs4yevyozIuBnO/lSEk6ROUYrttufGlA8bpkMD860wDCPGevkTTKQlhgMN6XuSFjwcemDUY8jqcgg7/lRQI/iGc2OkTSNIGYr3Tn+/WvPl1I811LI+eZmJP1rXeNb5mEVvzYQ7saynUlVbluWk0+4Vxnqj3TZVgjwn/cbxqaS67GObmPkgI8fOq7pMTSXPaH3Y98+tSN2HKkjoOnrUWodGXUIGUuc9GdwaUjiaTtHAPKo/PNNwghkBY74A386eSvJGMW7MHOBt0O3jWmPw17h68Gp6FC53lRRn1GP5fnUrw9L2UUlux2VyB8DuKzrgbXhban7FOnZrMAEbOwbr8ga0SRPY9SVlHckBGB4+IFVOf8AwsVGK4owaYQ6pKd2WIlQMHbJPSlM702icM1xbMQWySnqKDDiP2NFEt0xLsSFTGcnzpZms2jDRQ7HwIxTOznijujNLJyJCDH0zzE9QPh+9PJdQeXeCzwPAvt860BhcoNynOu+Mc37VF3M6QRklwQd/dwalmhmlVnlwM+Rqm8VazDYQOAw5x4ZoApnF2prPdqgJBHXfpVDncvMzetOLy7kurmSZmPeNIwRdrKAfd8ak+3SyXXyWHShFGIbdsYbvP8AGnN20K2pydyd/hmoWB3N2xU947AZ+lO71JGeKBDzHlDOR+dTcLKzoZNK014G2yzZC1c+FtEe8kNyYy4X8LdPiagdI0l7rU44xlmJG/lmtr0/RrW1tVs+yVkTBYfxH186fKrJ7fyigazoYtZreWJ0eRJQmUYYOc4xj4Yq82E7appapI+LiEDvY7wx0z/SmXEmmCYpOAqrD3YkUYAbqGPma4064EazIMhlijYEeBOaql2Seuqf/9k=",
+    };
+    const DAYS = ["周一","周二","周三","周四","周五","周六","周日"];
+    const DAY_AR = {"周一":"الإثنين","周二":"الثلاثاء","周三":"الأربعاء","周四":"الخميس","周五":"الجمعة","周六":"السبت","周日":"الأحد"};
+    const DAY_BARE = {"周一":"إثنين","周二":"ثلاثاء","周三":"أربعاء","周四":"خميس","周五":"جمعة","周六":"سبت","周日":"أحد"};
+    const DAY_SHORT = {"周一":"إثن","周二":"ثلا","周三":"أربع","周四":"خميس","周五":"جمع","周六":"سبت","周日":"أحد"};
+    function dayAr(w) { return DAY_AR[w] || w; }
+    function dayBare(w) { return DAY_BARE[w] || w; }
+    const CANCEL_REASONS = [
+      { id:"schedule", label:"الطفل لديه التزام آخر" },
+      { id:"sick", label:"الطفل مريض" },
+      { id:"device", label:"مشكلة في الجهاز أو الإنترنت" },
+      { id:"teacher", label:"أريد معلماً آخر" },
+      { id:"other", label:"سبب آخر" }
+    ];
+    const TIMES = ["16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30","20:00","21:00","22:00"];
+    const UNAVAILABLE = {
+      emily: ["周一-16:00","周二-22:00"],
+      jammye: ["周三-16:00"],
+      bek: ["周日-22:00"],
+      melvie: [],
+      anna: ["周六-16:00"]
+    };
+    const FULL_SLOTS = {
+      emily: ["周五-20:00","周五-21:00"],
+      jammye: ["周五-20:00"],
+      bek: ["周五-20:00"],
+      melvie: ["周五-20:00"],
+      anna: []
+    };
+    const WEEK = [
+      { date:"2026-08-09", w:"周日", n:9 },
+      { date:"2026-08-10", w:"周一", n:10 },
+      { date:"2026-08-11", w:"周二", n:11 },
+      { date:"2026-08-12", w:"周三", n:12 },
+      { date:"2026-08-13", w:"周四", n:13, today:true },
+      { date:"2026-08-14", w:"周五", n:14 },
+      { date:"2026-08-15", w:"周六", n:15 }
+    ];
+    function weekdayToDate(w) {
+      const hit = WEEK.find(x => x.w === w);
+      return hit ? hit.date : "2026-08-13";
+    }
+    function dateLabel(date) {
+      const hit = WEEK.find(x => x.date === date);
+      if (!hit) return date;
+      return hit.n + " أغسطس · " + dayAr(hit.w);
+    }
+    const TEACHERS = [
+      { id:"emily", name:"Emily", country:"الفلبين", exp:"3 سنوات تدريس", edu:"بكالوريوس", cert:"TESOL", tags:["تعبير حيّ","مشجّع"], fav:true, recent:true, photo:PHOTOS.emily, likes:1311, intro:"مرحباً، أنا المعلمة Emily. أدرّس الإنجليزية أونلاين منذ سنوات، وأشجّع الطفل على التحدث بثقة. أضبط الإيقاع حسب مستواه." },
+      { id:"jammye", name:"JAMMYE", country:"الفلبين", exp:"سنتان تدريس", edu:"بكالوريوس", cert:"TESOL", tags:["أنشطة متنوعة","تشجيع إيجابي"], fav:true, recent:true, photo:PHOTOS.jammye, likes:856, intro:"مرحباً، أنا المعلمة JAMMYE. أجعل الحصة ممتعة بأنشطة تفاعلية، وأساعد الطفل على استخدام الإنجليزية بثقة." },
+      { id:"bek", name:"Teacher Bek", country:"الفلبين", exp:"3 سنوات تدريس", edu:"بكالوريوس", cert:"TESOL", tags:["يصحّح النطق","سرعة مناسبة"], fav:false, recent:true, photo:PHOTOS.bek, likes:2402, intro:"مرحباً، أنا Teacher Bek. أركّز على النطق والتصحيح بسرعة مناسبة، ومناسب لمن يريد أساساً قوياً." },
+      { id:"melvie", name:"Melvie Pilar", country:"الفلبين", exp:"4 سنوات تدريس", edu:"بكالوريوس", cert:"TESOL", tags:["صبور ودقيق","مشجّع"], fav:false, recent:false, photo:PHOTOS.melvie, likes:674, intro:"مرحباً، أنا المعلمة Melvie Pilar. صبورة ودقيقة، ومناسبة للأطفال والمبتدئين." },
+      { id:"anna", name:"Anna Cruz", country:"الفلبين", exp:"6 سنوات تدريس", edu:"بكالوريوس", cert:"TEFL", tags:["نطق واضح","تعبير حيّ"], fav:false, recent:false, photo:PHOTOS.anna, likes:1890, intro:"مرحباً، أنا المعلمة Anna Cruz. نطقي واضح وتعبيري واضح في الصف. أساعد الطفل على القراءة والتحدث بثقة." },
+    ].map(t => ({ ...t, rating: t.id === "emily" ? "99.6" : t.id === "jammye" ? "99.2" : t.id === "bek" ? "98.8" : t.id === "melvie" ? "98.4" : "99.1" }));
+
+    const state = {
+      view: "home",
+      homeTab: "fixed",
+      mode: "create",
+      teacherId: null,
+      slots: [],
+      day: "周五",
+      search: "",
+      editId: null,
+      credits: 16,
+      sheetId: null,
+      slotsOpen: false,
+      waSheet: false,
+      waText: "مرحباً، أريد إعداد حصص ثابتة. هل يمكنك مساعدتي؟",
+      pendingNewTeacherId: null,
+      originSlot: null,
+      pendingNewSlot: null,
+      pendingCancelId: null,
+      pendingBlockedSlot: null,
+      keepSlot: null,
+      editLessonId: null,
+      pendingLessonCancelId: null,
+      cancelFrom: "home",
+      cancelReason: "",
+      cancelReasonOther: "",
+      knownFullSlots: [],
+      mineDate: "2026-08-13",
+      plans: [],
+      lessons: [
+        { id:"l1", teacherId:"emily", date:"2026-08-13", time:"17:00", weekday:"周四", type:"fixed", title:"Welcome Home, Emma!", level:"1v1 · CEJ Level 3" },
+        { id:"l2", teacherId:"bek", date:"2026-08-13", time:"18:00", weekday:"周四", type:"free", title:"Picture Book Reading Level D", level:"1v1" },
+        { id:"l3", teacherId:"jammye", date:"2026-08-13", time:"19:30", weekday:"周四", type:"fixed", title:"My Weekend", level:"1v1 · CEJ Level 3" },
+        { id:"l4", teacherId:"anna", date:"2026-08-13", time:"21:00", weekday:"周四", type:"free", title:"Phonics Fun", level:"1v1" }
+      ],
+      detailId: null,
+      introOpen: false,
+      advisorFrom: "home",
+      messages: [
+        { from:"advisor", text:"مرحباً، أنا المشرف التعليمي. إذا احتجت مساعدة في الحصص الثابتة، أو ترشيح معلم، أو ترتيب المواعيد، راسلني مباشرة." }
+      ]
+    };
+
+    const $ = (sel, el=document) => el.querySelector(sel);
+    function teacher(id) { return TEACHERS.find(t => t.id === id); }
+    function lesson(id) { return state.lessons.find(x => x.id === id); }
+    function lessonSlotKey(les) { return les.weekday + "-" + les.time; }
+    function isTeacherFull(tid, key) {
+      return (FULL_SLOTS[tid] || []).includes(key) || (UNAVAILABLE[tid] || []).includes(key);
+    }
+    function applySlotToLesson(les, key) {
+      const [w, t] = key.split("-");
+      les.weekday = w;
+      les.time = t;
+      les.date = weekdayToDate(w);
+    }
+    function isSingleTime() {
+      return state.mode === "changeTime" || state.mode === "lessonTime";
+    }
+    function lessonOnceHint() {
+      const les = lesson(state.editLessonId);
+      if (les && les.type === "fixed") {
+        return `<div class="hint">تُعدَّل هذه الحصة فقط. الخطة الأسبوعية لا تتغيّر. لتغيير كل أسبوع، اذهب إلى حصص ثابتة.</div>`;
+      }
+      return `<div class="hint">تُغيَّر هذه الحصة فقط.</div>`;
+    }
+    function slotKey(day, time) { return day + "-" + time; }
+    function occupiedKeys(exceptPlanId, exceptLessonId) {
+      const set = new Set();
+      state.plans.forEach(p => {
+        if (p.id === exceptPlanId) return;
+        p.slots.forEach(s => set.add(s));
+      });
+      state.lessons.forEach(l => {
+        if (l.id === exceptLessonId) return;
+        set.add(lessonSlotKey(l));
+      });
+      return set;
+    }
+    function formatOnce(key) {
+      if (!key) return "";
+      const [d, t] = key.split("-");
+      return dateLabel(weekdayToDate(d)) + " " + t + "–" + endTime(t);
+    }
+    function formatSlots(slots) {
+      return slots.map(s => {
+        const [d, t] = s.split("-");
+        return "كل " + dayBare(d) + "، من " + t;
+      }).join("، ");
+    }
+    function formatSlotsLines(slots) {
+      return slots.map(s => {
+        const [d, t] = s.split("-");
+        const end = endTime(t);
+        return "كل " + dayBare(d) + "، من " + t + " إلى " + end;
+      });
+    }
+    function bookedSummary(n, name) {
+      if (n === 1) return "تم حجز موعد أسبوعي مع " + name + ".";
+      if (n === 2) return "تم حجز موعدين أسبوعيين مع " + name + ".";
+      return "تم حجز " + n + " مواعيد أسبوعية مع " + name + ".";
+    }
+
+    function slotCountLabel(n) {
+      if (n === 1) return "تم اختيار موعد واحد";
+      if (n === 2) return "تم اختيار موعدين";
+      return "تم اختيار " + n + " مواعيد";
+    }
+    function endTime(t) {
+      const [h, m] = t.split(":").map(Number);
+      const d = new Date(2026,0,1,h,m+25);
+      return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+    }
+    function estimate(nSlots) {
+      if (!nSlots) return { lessons: 0, weeks: 0 };
+      const lessons = Math.min(state.credits, Math.max(nSlots, state.credits));
+      const weeks = Math.ceil(state.credits / nSlots);
+      return { lessons: state.credits, weeks };
+    }
+    function toast(msg) {
+      const el = $("#toast");
+      el.textContent = msg;
+      el.classList.add("on");
+      setTimeout(() => el.classList.remove("on"), 1800);
+    }
+    function go(view, extra={}) {
+      Object.assign(state, extra, { view, sheetId: null, slotsOpen: false, waSheet: false, pendingNewTeacherId: null, pendingNewSlot: null, pendingCancelId: null, pendingBlockedSlot: null, pendingLessonCancelId: null });
+      render();
+    }
+    function openAdvisor() {
+      state.advisorFrom = state.view;
+      state.view = "advisor";
+      render();
+    }
+    function navBar(title, opts={}) {
+      const back = opts.back !== false;
+      const advisor = opts.advisor === true;
+      return `<div class="nav">
+        <button class="back" ${back ? `onclick="historyBack()"` : ""}>${back ? "›" : ""}</button>
+        <div class="title">${title}</div>
+        <button class="right" ${advisor ? `onclick="openAdvisor()"` : ""}>${advisor ? "المشرف التعليمي" : ""}</button>
+      </div>`;
+    }
+    function stepper(n) {
+      const labels = ["اختر معلماً","اختر الموعد","تأكيد"];
+      return `<div class="stepper">${labels.map((l,i) => {
+        const k = i+1;
+        const cls = k === n ? "st on" : (k < n ? "st done" : "st");
+        return `<div class="${cls}"><div class="bar"></div>${k} ${l}</div>`;
+      }).join("")}</div>`;
+    }
+    function bottomNav() {
+      const tab = state.view === "messages" ? "messages" : "schedule";
+      return `<div class="bottom-nav">
+        <button onclick="toast('الرئيسية للعرض فقط')"><div class="ico">⌂</div>الرئيسية</button>
+        <button class="${tab==="schedule"?"active":""}" onclick="go('home')"><div class="ico">▦</div>الجدول</button>
+        <button class="${tab==="messages"?"active":""}" onclick="go('messages')"><div class="ico">💬</div>الرسائل</button>
+        <button onclick="toast('الساحة للعرض فقط')"><div class="ico">▷</div>الساحة</button>
+        <button onclick="toast('الحساب للعرض فقط')"><div class="ico">☺</div>الحساب</button>
+      </div>`;
+    }
+    function historyBack() {
+      if (state.waSheet) { state.waSheet = false; render(); return; }
+      if (state.pendingNewTeacherId) { state.pendingNewTeacherId = null; render(); return; }
+      if (state.pendingNewSlot) { state.pendingNewSlot = null; render(); return; }
+      if (state.pendingCancelId) { state.pendingCancelId = null; render(); return; }
+      if (state.pendingBlockedSlot) { state.pendingBlockedSlot = null; render(); return; }
+      if (state.pendingLessonCancelId && state.view !== "cancelLesson") { state.pendingLessonCancelId = null; render(); return; }
+      if (state.view === "advisor") return go(state.advisorFrom);
+      if (state.view === "detail") return go("teacher");
+      if (state.view === "teacher" && (state.mode === "changeTeacher" || state.mode === "lessonTeacher")) return go("home");
+      if (state.view === "time" && state.mode === "create") return go("teacher");
+      if (state.view === "time" && (state.mode === "changeTime" || state.mode === "lessonTime")) return go("home");
+      if (state.view === "confirm") return go("time");
+      if (state.view === "success") return go("home");
+      if (state.view === "lesson") return go("home");
+      if (state.view === "cancelLesson") return closeLessonCancel();
+      if (state.view === "messages") return go("home");
+      go("home");
+    }
+
+    function renderHome() {
+      if (state.homeTab === "mine") return renderMine();
+      if (state.homeTab === "done") {
+        return `${navBar("الجدول", { back:false, advisor:false })}
+          ${homeTabs()}
+          <div class="scroll"><div class="ph">لا توجد حصص مكتملة</div></div>
+          ${bottomNav()}`;
+      }
+      if (!state.plans.length) return renderEmpty();
+      return renderList();
+    }
+    function homeTabs() {
+      return `<div class="tabs">
+        <button class="${state.homeTab==="fixed"?"active":""}" onclick="state.homeTab='fixed';render()">حصص ثابتة</button>
+        <button class="${state.homeTab==="mine"?"active":""}" onclick="state.homeTab='mine';render()">حصصي</button>
+        <button class="${state.homeTab==="done"?"active":""}" onclick="state.homeTab='done';render()">مكتملة</button>
+      </div>`;
+    }
+    function renderMine() {
+      const list = state.lessons.filter(x => x.date === state.mineDate)
+        .sort((a,b) => a.time.localeCompare(b.time));
+      const week = WEEK.map(d => {
+        const has = state.lessons.some(x => x.date === d.date);
+        return `<button class="wd ${state.mineDate===d.date?"on":""} ${has?"has":""}" onclick="state.mineDate='${d.date}';render()">
+          <div>${DAY_SHORT[d.w]}</div>
+          <div class="n">${d.today ? "اليوم" : d.n}</div>
+          <div class="dot"></div>
+        </button>`;
+      }).join("");
+      const cards = list.length ? list.map(les => {
+        const t = teacher(les.teacherId);
+        const fixed = les.type === "fixed";
+        return `<div class="lcard" onclick="openLesson('${les.id}')">
+          <div class="lcard-top">
+            <div class="ltime">
+              <div class="hm">${les.time}</div>
+              <div class="dt">${dateLabel(les.date)}</div>
+              ${fixed ? '<span class="tag-fixed">ثابتة</span>' : ""}
+            </div>
+            <div class="lbody">
+              <div class="ltitle">${les.title}</div>
+              <div class="llevel">${les.level}</div>
+              <div class="lteacher">${avatarHtml(t, false)} ${t.name}</div>
+            </div>
+          </div>
+          <div class="lacts" onclick="event.stopPropagation()">
+            <button onclick="event.stopPropagation();askCancelLesson('${les.id}')">إلغاء</button>
+            <button onclick="event.stopPropagation();startLessonChangeTime('${les.id}')">تغيير الموعد</button>
+            <button onclick="event.stopPropagation();startLessonChangeTeacher('${les.id}')">تغيير المعلم</button>
+          </div>
+        </div>`;
+      }).join("") : `<div class="ph">لا حصص في هذا اليوم</div>`;
+      return `${navBar("الجدول", { back:false, advisor:false })}
+        ${homeTabs()}
+        <div class="month-row"><span>أغسطس 2026</span><button class="go-book" onclick="state.homeTab='fixed';render()">احجز</button></div>
+        <div class="week-row">${week}</div>
+        <div class="scroll">${cards}<div style="height:12px"></div></div>
+        ${bottomNav()}`;
+    }
+    function openLesson(id) {
+      state.editLessonId = id;
+      go("lesson");
+    }
+    function renderLesson() {
+      const les = lesson(state.editLessonId);
+      if (!les) return renderMine();
+      const t = teacher(les.teacherId);
+      const fixed = les.type === "fixed";
+      return `${navBar("تفاصيل الحصة")}
+        <div class="scroll">
+          <div class="card">
+            <div class="row"><span class="k">الموعد</span><span style="font-weight:700">${dateLabel(les.date)} ${les.time}–${endTime(les.time)}</span></div>
+            <div class="row"><span class="k">المعلم</span><span class="teacher-val">${avatarHtml(t, false)}<span>${t.name}</span></span></div>
+            <div class="row"><span class="k">النوع</span><span>${fixed ? '<span class="tag-fixed">ثابتة</span> حصة ثابتة' : "حصة عادية"}</span></div>
+            <div class="rule">
+              <div class="t">${les.title}</div>
+              <div class="s">${les.level}</div>
+            </div>
+          </div>
+          <div class="pad">
+            <button class="btn btn-primary" onclick="startLessonChangeTime('${les.id}')">تغيير الموعد</button>
+            <div style="height:10px"></div>
+            <button class="btn btn-ghost" onclick="startLessonChangeTeacher('${les.id}')">تغيير المعلم</button>
+            <div style="height:10px"></div>
+            <button class="btn btn-outline" onclick="askCancelLesson('${les.id}')">إلغاء هذه الحصة</button>
+          </div>
+        </div>`;
+    }
+    function renderEmpty() {
+      return `${navBar("الجدول", { back:false, advisor:false })}
+        ${homeTabs()}
+        <div class="scroll">
+          <div class="empty">
+            ${illus()}
+            <h2>لا توجد حصص ثابتة بعد</h2>
+            <p class="desc">اختر معلماً ومواعيد أسبوعية، ونحجز الحصص تلقائياً كل أسبوع.</p>
+            <div class="steps-preview">
+              <div class="sp"><div class="n">1</div><span>اختر معلماً</span></div>
+              <div class="sp"><div class="n">2</div><span>اختر الموعد</span></div>
+              <div class="sp"><div class="n">3</div><span>تأكيد</span></div>
+            </div>
+            <button class="btn btn-primary" onclick="startCreate()">إعداد حصص ثابتة</button>
+            <div style="height:10px"></div>
+            <button class="btn btn-ghost" onclick="openAdvisor()">تواصل مع المشرف التعليمي</button>
+            <div class="benefits whatis">
+              <div class="cap">ما هي الحصص الثابتة؟</div>
+              <div class="body">حدّد يوماً ووقتاً ثابتاً مع معلم معيّن، مثل كل جمعة، من 17:00. نحجز الحصة تلقائياً كل أسبوع. تُخصم حصة من رصيدك بعد كل درس، ويمكنك تغيير المعلم أو الموعد في أي وقت.</div>
+            </div>
+            <div class="benefits">
+              <div class="cap">لماذا تختار خطة ثابتة؟</div>
+              <div class="ben"><div class="n">1</div><div><div class="t">بناء عادة تعلّم منتظمة</div><div class="d">لن تحتاج إلى الحجز كل أسبوع، فالموعد الثابت يساعد على الاستمرار.</div></div></div>
+              <div class="ben"><div class="n">2</div><div><div class="t">حجز معلمك المفضّل</div><div class="d">تمتلئ مواعيد المعلمين المفضّلين بسرعة، والخطة الثابتة تضمن حجز موعدك مسبقًا.</div></div></div>
+              <div class="ben"><div class="n">3</div><div><div class="t">تنظيم جدول الأسرة</div><div class="d">يسهّل الموعد الثابت، مثل الساعة 17:00 يوم الجمعة، تنسيق المواصلات والأنشطة.</div></div></div>
+              <div class="ben"><div class="n">4</div><div><div class="t">اختيار أكثر من موعد</div><div class="d">يمكنك اختيار عدة مواعيد ثابتة مع المعلم نفسه، مثل مساء أيام الأسبوع وصباح عطلة نهاية الأسبوع.</div></div></div>
+            </div>
+          </div>
+        </div>
+        ${bottomNav()}`;
+    }
+    function illus() {
+      return `<svg class="illus" viewBox="0 0 160 120" fill="none">
+        <rect x="38" y="42" width="84" height="52" rx="8" fill="#FFD100"/>
+        <rect x="46" y="34" width="28" height="36" rx="4" fill="#FFF" stroke="#E8C200"/>
+        <rect x="78" y="28" width="28" height="42" rx="4" fill="#FFF" stroke="#E8C200"/>
+        <circle cx="92" cy="44" r="8" fill="#F3C4A4"/>
+        <circle cx="60" cy="48" r="6" fill="#E7B6B9"/>
+        <path d="M30 28h8M122 24h10M28 70h6M126 66h8" stroke="#7EC8F8" stroke-width="3" stroke-linecap="round"/>
+      </svg>`;
+    }
+    function renderList() {
+      const cards = state.plans.map(p => {
+        const t = teacher(p.teacherId);
+        const lines = formatSlotsLines(p.slots);
+        return `<div class="pcard ${p.paused ? "paused" : ""}">
+          <div class="phead">
+            <div class="avatar" style="width:40px;height:40px"><img src="${t.photo}" alt="${t.name}"></div>
+            <div>
+              <div style="font-weight:700">${t.name}</div>
+              <div class="pmeta">★ ${t.rating} · ${t.exp}</div>
+            </div>
+            <span class="status-chip ${p.paused?"pause":""}">${p.paused?"متوقفة":"نشطة"}</span>
+            <button class="more" onclick="state.sheetId='${p.id}';render()">⋯</button>
+          </div>
+          <div class="ptimes">${lines.join("<br>")}</div>
+          <div class="pmeta">تتكرر أسبوعياً حتى نفاد الحصص</div>
+          <div class="pacts">
+            <button onclick="startChangeTeacher('${p.id}')">تغيير المعلم</button>
+            <button onclick="startChangeTime('${p.id}')">تغيير الموعد</button>
+          </div>
+        </div>`;
+      }).join("");
+      return `${navBar("الجدول", { back:false, advisor:false })}
+        ${homeTabs()}
+        <div class="credits">متبقي <b>${state.credits}</b> حصة · تُخصم حصة بعد كل درس</div>
+        <div class="scroll">${cards}
+          <div class="pad">
+            <button class="btn btn-primary" onclick="startCreate()">إضافة حصة ثابتة</button>
+            <div style="height:10px"></div>
+            <button class="btn btn-ghost" onclick="openAdvisor()">تواصل مع المشرف التعليمي</button>
+          </div>
+        </div>
+        ${bottomNav()}
+        ${sheetHtml()}`;
+    }
+    function sheetHtml() {
+      if (!state.sheetId) return `<div class="mask"></div>`;
+      const p = state.plans.find(x => x.id === state.sheetId);
+      const pauseLabel = p && p.paused ? "استئناف هذه الحصة" : "إيقاف هذه الحصة";
+      return `<div class="mask on" onclick="if(event.target===this){state.sheetId=null;render()}">
+        <div class="sheet">
+          <button onclick="togglePause('${state.sheetId}')">${pauseLabel}</button>
+          <button class="danger" onclick="askCancelPlan('${state.sheetId}')">إلغاء هذه الخطة</button>
+          <button class="cancel" onclick="state.sheetId=null;render()">إغلاق</button>
+        </div>
+      </div>`;
+    }
+    function openSlotsSheet() {
+      if (!state.slots.length) return;
+      state.slotsOpen = true;
+      render();
+    }
+    function closeSlotsSheet() {
+      state.slotsOpen = false;
+      render();
+    }
+    function slotsSheetHtml() {
+      if (!state.slotsOpen || !state.slots.length) return "";
+      const rows = state.slots.map((key) => {
+        const [d, t] = key.split("-");
+        return `<div class="slot-row">
+          <div>
+            <div class="t">${formatSlotsLines([key])[0]}</div>
+            <div class="s">كل أسبوع · 25 دقيقة</div>
+          </div>
+        </div>`;
+      }).join("");
+      return `<div class="mask on" onclick="if(event.target===this)closeSlotsSheet()">
+        <div class="sheet slots-sheet">
+          <div class="grab"></div>
+          <div class="sheet-head">${slotCountLabel(state.slots.length)}</div>
+          <div class="slots-list">${rows}</div>
+          <button class="btn btn-primary" onclick="closeSlotsSheet()">إغلاق</button>
+        </div>
+      </div>`;
+    }
+    function avatarHtml(t, fav) {
+      return `<div class="avatar"><img src="${t.photo}" alt="${t.name}">${fav ? '<span class="badge-fav">مفضّل</span>' : ""}</div>`;
+    }
+    function teacherCard(t, extra="") {
+      return `<div class="tcard" onclick="pickTeacher('${t.id}')">
+        <div class="tcard-main">
+          ${avatarHtml(t, t.fav)}
+          <div class="tmeta">
+            <div class="name-row">
+              <div class="name">${t.name}<span class="play">▶</span>${extra}</div>
+              <span class="rate">★ ${t.rating}</span>
+            </div>
+            <div class="tags">${t.tags.map(x=>`<span class="tag">${x}</span>`).join("")}</div>
+          </div>
+        </div>
+        <div class="tcard-bar">
+          <span class="cert">◆ ${t.cert}</span>
+          <span class="sep"></span>
+          <span>${t.exp}</span>
+          <span class="sep"></span>
+          <span>${t.edu}</span>
+          <button class="book-btn" onclick="event.stopPropagation();openDetail('${t.id}')">التفاصيل</button>
+        </div>
+      </div>`;
+    }
+    function filteredTeachers() {
+      const q = state.search.trim().toLowerCase();
+      return TEACHERS.filter(t => !q || t.name.toLowerCase().includes(q));
+    }
+    function renderTeacher() {
+      const changing = state.mode === "changeTeacher" || state.mode === "lessonTeacher";
+      const currentId = state.mode === "changeTeacher"
+        ? (state.plans.find(p => p.id === state.editId) || {}).teacherId
+        : (lesson(state.editLessonId) || {}).teacherId;
+      const keep = state.mode === "lessonTeacher" ? (state.keepSlot || (lesson(state.editLessonId) && lessonSlotKey(lesson(state.editLessonId)))) : null;
+      let list = filteredTeachers();
+      if (keep) list = list.filter(t => t.id === currentId || !isTeacherFull(t.id, keep));
+      const others = list.filter(t => t.id !== currentId);
+      const noOtherForSlot = state.mode === "lessonTeacher" && keep && !others.length;
+      const fav = list.filter(t => t.fav);
+      const recent = list.filter(t => t.recent && !t.fav);
+      const rest = list.filter(t => !t.fav && !t.recent);
+      let body = "";
+      if (noOtherForSlot) {
+        body = `<div class="ph">لا يوجد معلمون آخرون في هذا الموعد</div>
+          <div class="pad">
+            <button class="btn btn-primary" onclick="startLessonChangeTime('${state.editLessonId}')">تغيير الموعد (نفس المعلم)</button>
+            <div style="height:10px"></div>
+            <button class="btn btn-ghost" onclick="go('home')">إلغاء</button>
+          </div>`;
+      } else {
+        if (!fav.length && !state.search) {
+          body += `<div class="hint">المعلمون المفضّلون يظهرون أولاً لتسهيل الحجز. بالأسفل من حجزت معهم مؤخراً.</div>`;
+        }
+        if (fav.length) {
+          body += `<div class="sec-title">المفضّلون</div>` + fav.map(t => teacherCard(t, currentId===t.id ? '<span class="current-mark">الحالي</span>' : "")).join("");
+        }
+        if (recent.length) {
+          body += `<div class="sec-title">حجزت معهم مؤخراً</div>` + recent.map(t => teacherCard(t, currentId===t.id ? '<span class="current-mark">الحالي</span>' : "")).join("");
+        }
+        if (rest.length) {
+          body += `<div class="sec-title">كل المعلمين</div>` + rest.map(t => teacherCard(t)).join("");
+        }
+        if (!list.length) {
+          body += `<div class="ph">لم يُعثر على معلم</div>`;
+        }
+      }
+      const title = changing ? "تغيير المعلم" : "اختر معلماً";
+      const hint = state.mode === "lessonTeacher"
+        ? lessonOnceHint()
+        : (state.mode === "changeTeacher" ? `<div class="hint">الموعد يبقى كما هو. يُغيَّر المعلم فقط.</div>` : "");
+      return `${navBar(title, changing ? { advisor:false } : {})}${changing ? "" : stepper(1)}
+        ${hint}
+        <input class="search" placeholder="ابحث باسم المعلم" value="${escapeAttr(state.search)}" oninput="state.search=this.value;render()">
+        <div class="scroll">${body}<div style="height:16px"></div></div>
+        ${changing ? `<div class="dock"><div class="count">اختر معلماً ثم أكّد</div></div>` : ""}`;
+    }
+    function renderTime() {
+      const t = teacher(state.teacherId);
+      const single = isSingleTime();
+      const exceptPlan = state.mode === "changeTime" ? state.editId : null;
+      const exceptLes = state.mode === "lessonTime" ? state.editLessonId : null;
+      const occ = occupiedKeys(exceptPlan, exceptLes);
+      const unavail = new Set(UNAVAILABLE[state.teacherId] || []);
+      const knownFull = new Set(state.knownFullSlots || []);
+      const origin = single ? state.originSlot : null;
+      const grid = TIMES.map(time => {
+        const key = slotKey(state.day, time);
+        const taken = occ.has(key);
+        const isFull = knownFull.has(key);
+        const isCur = origin === key;
+        const off = (unavail.has(key) || taken || isFull) && !isCur;
+        const on = !isCur && state.slots.includes(key);
+        const label = off ? (isFull ? "مكتمل" : (taken ? "محجوز" : time)) : time;
+        const cls = `slot ${on?"on":""} ${off?"off":""} ${isCur?"cur":""}`;
+        const mark = isCur ? '<span class="now">الحالي</span>' : (on ? '<span class="rec">↻</span>' : "");
+        return `<button class="${cls}" ${off?"":`onclick="toggleSlot('${key}')"`}>${label}${mark}</button>`;
+      }).join("");
+      const badgeKeys = single ? [origin, ...state.slots].filter(Boolean) : state.slots;
+      const days = DAYS.map(d => {
+        const n = badgeKeys.filter(s => s.startsWith(d + "-")).length;
+        const badge = n ? `<span class="day-badge">${n}</span>` : "";
+        return `<button class="${state.day===d?"on":""}" onclick="state.day='${d}';render()"><b>${dayBare(d)}</b>${badge}</button>`;
+      }).join("");
+      const originText = origin ? formatSlotsLines([origin])[0] : "";
+      const newText = !state.slots[0] ? "" : (state.mode === "lessonTime" ? formatOnce(state.slots[0]) : formatSlotsLines(state.slots)[0]);
+      const hint = state.mode === "lessonTime"
+        ? lessonOnceHint()
+        : (single
+          ? `<div class="hint">الموعد الحالي: ${originText}. اختر موعداً واحداً بديلاً. المعلم لا يتغيّر.</div>`
+          : `<div class="hint">يتكرر الموعد أسبوعيًا، ويمكنك اختيار عدة مواعيد في أيام مختلفة</div>`);
+      const countBtn = single
+        ? `<div class="count">${newText ? "سيُستبدل بـ " + newText : "اختر موعداً واحداً جديداً"}</div>`
+        : (state.slots.length
+          ? `<button class="count tap" onclick="openSlotsSheet()">${slotCountLabel(state.slots.length)} <span class="chev">⌃</span></button>`
+          : `<div class="count">اختر موعدًا أسبوعيًا واحدًا على الأقل</div>`);
+      const navTitle = state.mode === "lessonTime" ? "تغيير الموعد" : (single ? "تغيير الموعد" : "اختر الموعد");
+      return `${navBar(navTitle)}${single ? "" : stepper(2)}
+        <div class="locked">
+          ${avatarHtml(t, t.fav)}
+          <div><b>${t.name}</b><div class="pmeta">${t.exp} · ★ ${t.rating}</div></div>
+          ${single ? "" : `<button class="chg" onclick="go('teacher',{mode:'create'})">تغيير</button>`}
+        </div>
+        ${hint}
+        <div class="days">${days}</div>
+        <div class="scroll">
+          <div class="sec-title">${dayAr(state.day)} · المواعيد المتاحة</div>
+          <div class="grid">${grid}</div>
+        </div>
+        <div class="dock">
+          ${countBtn}
+          <button class="btn btn-primary" ${state.slots.length?"":"disabled"} onclick="nextFromTime()">${single ? "تأكيد الموعد" : "التالي"}</button>
+        </div>
+        ${single ? "" : slotsSheetHtml()}`;
+    }
+    function renderConfirm() {
+      const t = teacher(state.teacherId);
+      const lines = formatSlotsLines(state.slots);
+      return `${navBar("تأكيد الحصص")}${stepper(3)}
+        <div class="scroll">
+          <div class="card">
+            <div class="row"><span class="k">المعلم</span><span class="teacher-val">${avatarHtml(t, false)}<span>${t.name}</span></span></div>
+            <div class="row"><span class="k">الحصص المتبقية</span><span style="color:#C9A100;font-weight:700">${state.credits} حصة</span></div>
+            ${lines.map(l => `<div class="rule"><div class="t">${l}</div><div class="s">كل أسبوع · 25 دقيقة</div></div>`).join("")}
+            <p class="note">تُخصم حصة من رصيدك بعد كل درس. يمكنك تغيير المعلم أو الموعد أو الإلغاء في أي وقت.</p>
+          </div>
+        </div>
+        <div class="dock full">
+          <button class="btn btn-primary" onclick="confirmCreate()">تأكيد الحصص</button>
+        </div>`;
+    }
+    function renderSuccess() {
+      const t = teacher(state.teacherId);
+      return `${navBar("إضافة حصة ثابتة")}
+        <div class="scroll">
+          <div class="success">
+            <div class="ok">✓</div>
+            <h2>تم إعداد الحصص الثابتة</h2>
+            <p class="desc" style="margin-top:8px">${bookedSummary(state.slots.length, t.name)}</p>
+          </div>
+          <div class="card">
+            ${formatSlotsLines(state.slots).map(l => `<div class="t" style="font-weight:650;margin:6px 0">${l}</div>`).join("")}
+            <div class="note">تُحدّث المواعيد تلقائيًا بعد أي تعديل أو إلغاء.</div>
+          </div>
+          <div class="pad">
+            <button class="btn btn-primary" onclick="go('home')">عرض حصصي الثابتة</button>
+            <div style="height:10px"></div>
+            <button class="btn btn-outline" onclick="startCreate()">حجز معلم آخر</button>
+          </div>
+        </div>`;
+    }
+    function openMsg(id) {
+      if (id === "advisor" || id === "cs") {
+        openAdvisor();
+        return;
+      }
+      const names = { sys:"رسائل النظام" };
+      toast((names[id] || "الرسائل") + " للعرض فقط");
+    }
+    function renderMessages() {
+      const rows = [
+        { id:"advisor", bg:"#FFD100", color:"#1A1A1A", ico:"51", round:true, title:"المشرف التعليمي · يرد بعد الساعة 10 صباحاً", preview:"مرحباً، يمكنني مساعدتك في ترتيب الحصص الثابتة...", time:"14:47" },
+        { id:"sys", bg:"#2EC4B6", color:"#fff", ico:"🔔", title:"رسائل النظام", preview:"تم تحديث ترتيب التمرين الأسبوعي...", time:"08-03 09:01" },
+        { id:"cs", bg:"#FFE566", color:"#1A1A1A", ico:"🦁", title:"خدمة 51Talk", preview:"أسئلة شائعة", time:"14:48" }
+      ].map(r => `<button class="msg-row" onclick="openMsg('${r.id}')">
+          <div class="msg-ico ${r.round?"round":""}" style="background:${r.bg};color:${r.color}">${r.ico}</div>
+          <div class="msg-mid">
+            <div class="msg-title">${r.title}</div>
+            <div class="msg-preview">${r.preview}</div>
+          </div>
+          ${r.time ? `<div class="msg-time">${r.time}</div>` : ""}
+        </button>`).join("");
+      return `${navBar("الرسائل", { back:false, advisor:false })}
+        <div class="scroll" style="background:#fff">${rows}</div>
+        <div class="quick bottom">
+          <button onclick="openWaSheet('مرحباً، أريد إعداد حصص ثابتة. هل يمكنك مساعدتي؟')">إعداد حصص ثابتة</button>
+          <button onclick="openWaSheet('مرحباً، هل يمكنك ترشيح معلم مناسب؟')">ترشيح معلم</button>
+          <button onclick="openWaSheet('مرحباً، كيف أستخدم الحصص المتبقية؟')">استخدام الحصص</button>
+        </div>
+        <div class="advisor-bar">
+          <div class="av">S</div>
+          <div>
+            <div class="nm">Sara</div>
+            <div class="role">المشرف التعليمي</div>
+          </div>
+          <div class="acts">
+            <button class="wa-btn" onclick="openWaSheet()">واتساب</button>
+          </div>
+        </div>
+        ${bottomNav()}
+        ${waSheetHtml()}`;
+    }
+    function openWaSheet(text) {
+      state.waText = text || "مرحباً، أريد إعداد حصص ثابتة. هل يمكنك مساعدتي؟";
+      state.waSheet = true;
+      render();
+    }
+    function closeWaSheet() {
+      state.waSheet = false;
+      render();
+    }
+    function openWhatsApp() {
+      const text = encodeURIComponent(state.waText || "مرحباً، أريد إعداد حصص ثابتة. هل يمكنك مساعدتي؟");
+      const url = "https://wa.me/971500000000?text=" + text;
+      state.waSheet = false;
+      let opened = null;
+      try { opened = window.open(url, "_blank"); } catch (e) { opened = null; }
+      toast(opened ? "جارٍ فتح واتساب" : "يرجى فتح واتساب على الهاتف");
+      render();
+    }
+    function waSheetHtml() {
+      if (!state.waSheet) return "";
+      return `<div class="mask on" onclick="if(event.target===this)closeWaSheet()">
+        <div class="sheet slots-sheet">
+          <div class="grab"></div>
+          <div class="sheet-head">التواصل عبر واتساب</div>
+          <div class="slot-row" style="border:none;display:block;padding-top:0">
+            <div class="s">سيُفتح واتساب للتحدث مع Sara. لا حاجة لإضافتها أولاً.</div>
+          </div>
+          <div class="wa-preview">${escapeHtml(state.waText)}</div>
+          <button class="btn-wa" onclick="openWhatsApp()">فتح واتساب</button>
+          <button class="cancel" onclick="closeWaSheet()">إلغاء</button>
+        </div>
+      </div>`;
+    }
+    function renderAdvisor() {
+      const msgs = state.messages.map(m => `<div class="bubble ${m.from==="me"?"me":""}">${m.text}</div>`).join("");
+      return `${navBar("المشرف التعليمي")}
+        <div class="scroll chat">${msgs}</div>
+        <div class="quick bottom">
+          <button onclick="sendMsg('أريد إعداد حصص ثابتة')">إعداد حصص ثابتة</button>
+          <button onclick="sendMsg('هل يمكنك ترشيح معلم مناسب؟')">ترشيح معلم</button>
+          <button onclick="sendMsg('كيف أستخدم الحصص المتبقية؟')">استخدام الحصص</button>
+        </div>
+        <div class="composer">
+          <input id="msgInput" placeholder="اكتب سؤالك هنا" onkeydown="if(event.key==='Enter')sendTyped()">
+          <button onclick="sendTyped()">إرسال</button>
+        </div>`;
+    }
+
+    function openDetail(id) {
+      state.detailId = id;
+      state.introOpen = false;
+      go("detail");
+    }
+    function renderDetail() {
+      const t = teacher(state.detailId);
+      if (!t) return renderTeacher();
+      const impressions = [...t.tags, "شرح صبور", "تصحيح مناسب"].filter((x,i,a) => a.indexOf(x)===i);
+      const reviews = [
+        { name:"الطالبة Anna", date:"6 أغسطس", text:"كانت الحصة ممتازة", photo:PHOTOS.anna },
+        { name:"الطالبة coco", date:"4 أغسطس", text:"كانت الحصة ممتازة", photo:PHOTOS.emily },
+        { name:"الطالبة Yuvia", date:"2 أغسطس", text:"كانت الحصة ممتازة", photo:PHOTOS.melvie }
+      ];
+      return `<div class="nav detail-nav">
+          <button class="back" onclick="historyBack()">›</button>
+          <div class="title">تفاصيل المعلم</div>
+          <button class="right" onclick="toast('أُضيف إلى المفضلة ${t.likes}')"><span class="heart">♥ ${t.likes}</span>　⤴</button>
+        </div>
+        <div class="scroll">
+          <div class="hero" style="background-image:url('${t.photo}')">
+            <div class="brand">51Talk</div>
+            <button class="play-lg" onclick="toast('تشغيل فيديو التعريف')">▶</button>
+            <div class="sub">I've been an online English teacher for years<br>أدرّس الإنجليزية أونلاين منذ سنوات</div>
+          </div>
+          <div class="profile-card">
+            <div class="top">
+              ${avatarHtml(t, false)}
+              <div>
+                <div class="nm">${t.name}</div>
+                <div class="meta">${t.exp} | ${t.edu}</div>
+              </div>
+              <button class="voice" onclick="toast('تشغيل المقدمة الصوتية')">〰</button>
+            </div>
+            <div class="stats">
+              <div><div class="n">${t.rating}</div><div class="l">التقييم</div></div>
+              <div class="split"></div>
+              <div><div class="n">${t.likes}</div><div class="l">المفضّلون</div></div>
+            </div>
+          </div>
+          <div class="sec">
+            <h3>فيديوهات التدريس</h3>
+            <div class="vids">
+              <div class="v" style="background-image:url('${t.photo}')"></div>
+              <div class="v" style="background-image:url('${PHOTOS.jammye}')"></div>
+              <div class="v" style="background-image:url('${PHOTOS.bek}')"></div>
+            </div>
+          </div>
+          <div class="sec">
+            <h3>نبذة</h3>
+            <div class="bio ${state.introOpen?"":"clamp"}">${t.intro}</div>
+            <button class="expand" onclick="state.introOpen=!state.introOpen;render()">${state.introOpen?"أقل ∧":"المزيد ∨"}</button>
+          </div>
+          <div class="sec">
+            <h3>الشهادات</h3>
+            <div class="cert-row">
+              <span class="ok">✔</span>
+              <span>شهادة ${t.cert} في تدريس الإنجليزية</span>
+              <span class="view" onclick="toast('عرض الشهادة')">&lt; عرض</span>
+            </div>
+          </div>
+          <div class="sec">
+            <h3>آراء الطلاب<span class="more">&lt; 3997</span></h3>
+            <div class="imp-tags">${impressions.map(x=>`<span>${x}</span>`).join("")}</div>
+            ${reviews.map(r => `<div class="rev">
+              <div class="av"><img src="${r.photo}" alt=""></div>
+              <div>
+                <div class="who">${r.name}<span class="when">${r.date}</span></div>
+                <div class="txt">${r.text}</div>
+              </div>
+            </div>`).join("")}
+          </div>
+        </div>
+        <div class="dock full">
+          <button class="btn btn-primary" onclick="pickTeacher('${t.id}')">${state.mode === "lessonTeacher" || state.mode === "changeTeacher" ? "اختيار هذا المعلم" : "اختيار موعد ثابت"}</button>
+        </div>`;
+    }
+
+    function startCreate() {
+      state.mode = "create";
+      state.teacherId = null;
+      state.slots = [];
+      state.day = "周五";
+      state.search = "";
+      state.editId = null;
+      state.keepSlot = null;
+      state.editLessonId = null;
+      state.knownFullSlots = [];
+      go("teacher");
+    }
+    function pickTeacher(id) {
+      if (state.mode === "changeTeacher" || state.mode === "lessonTeacher") {
+        const currentId = state.mode === "changeTeacher"
+          ? (state.plans.find(p => p.id === state.editId) || {}).teacherId
+          : (lesson(state.editLessonId) || {}).teacherId;
+        if (currentId === id) { toast("هذا هو المعلم الحالي"); return; }
+        const keep = state.keepSlot || (state.mode === "lessonTeacher" && lesson(state.editLessonId) && lessonSlotKey(lesson(state.editLessonId)));
+        if (state.mode === "lessonTeacher" && keep && isTeacherFull(id, keep)) {
+          toast("هذا المعلم غير متاح في هذا الموعد");
+          return;
+        }
+        state.pendingNewTeacherId = id;
+        render();
+        return;
+      }
+      state.teacherId = id;
+      state.slots = [];
+      go("time");
+    }
+    function cancelChangeTeacher() {
+      state.pendingNewTeacherId = null;
+      render();
+    }
+    function confirmChangeTeacher() {
+      const id = state.pendingNewTeacherId;
+      if (state.mode === "lessonTeacher") {
+        const les = lesson(state.editLessonId);
+        if (!les || !id) return;
+        les.teacherId = id;
+        if (state.keepSlot) applySlotToLesson(les, state.keepSlot);
+        state.keepSlot = null;
+        state.mineDate = les.date;
+        toast("تم التغيير إلى " + teacher(id).name);
+        go("home");
+        return;
+      }
+      const p = state.plans.find(x => x.id === state.editId);
+      if (!p || !id) return;
+      p.teacherId = id;
+      toast("تم التغيير إلى " + teacher(id).name);
+      go("home");
+    }
+    function changeConfirmHtml() {
+      const isLesson = state.mode === "lessonTeacher";
+      const les = isLesson ? lesson(state.editLessonId) : null;
+      const p = isLesson ? null : state.plans.find(x => x.id === state.editId);
+      const oldT = teacher(isLesson ? les.teacherId : p.teacherId);
+      const newT = teacher(state.pendingNewTeacherId);
+      const times = isLesson
+        ? formatOnce(state.keepSlot || lessonSlotKey(les))
+        : formatSlotsLines(p.slots).join("، ");
+      const sub = isLesson ? "تُغيَّر هذه الحصة فقط. الخطة الأسبوعية لا تتغيّر" : "الموعد يبقى كما هو";
+      return `<div class="mask on center" onclick="if(event.target===this)cancelChangeTeacher()">
+        <div class="dialog">
+          <div class="dialog-title">تأكيد تغيير المعلم؟</div>
+          <div class="dialog-sub">${sub}</div>
+          <div class="swap">
+            <div class="swap-side">
+              ${avatarHtml(oldT, false)}
+              <div class="lab">سيُستبدل</div>
+              <div class="nm">${oldT.name}</div>
+            </div>
+            <div class="swap-arrow">←</div>
+            <div class="swap-side">
+              ${avatarHtml(newT, false)}
+              <div class="lab">الاختيار الجديد</div>
+              <div class="nm">${newT.name}</div>
+            </div>
+          </div>
+          <div class="dialog-note">${times}</div>
+          <div class="dialog-acts">
+            <button class="btn btn-ghost" onclick="cancelChangeTeacher()">إلغاء</button>
+            <button class="btn btn-primary" onclick="confirmChangeTeacher()">تأكيد التغيير</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    function toggleSlot(key) {
+      if (isSingleTime()) {
+        if (key === state.originSlot) { toast("يرجى اختيار موعد جديد"); return; }
+        state.slots = state.slots[0] === key ? [] : [key];
+        render();
+        return;
+      }
+      const i = state.slots.indexOf(key);
+      if (i >= 0) state.slots.splice(i, 1);
+      else state.slots.push(key);
+      state.slots.sort((a,b) => {
+        const da = DAYS.indexOf(a.split("-")[0]);
+        const db = DAYS.indexOf(b.split("-")[0]);
+        if (da !== db) return da - db;
+        return TIMES.indexOf(a.split("-")[1]) - TIMES.indexOf(b.split("-")[1]);
+      });
+      render();
+    }
+    function nextFromTime() {
+      if (!state.slots.length) return;
+      if (state.mode === "lessonTime") {
+        if (state.slots[0] === state.originSlot) { toast("يرجى اختيار موعد جديد"); return; }
+        if (isTeacherFull(state.teacherId, state.slots[0])) {
+          state.pendingBlockedSlot = state.slots[0];
+          render();
+          return;
+        }
+        state.pendingNewSlot = state.slots[0];
+        render();
+        return;
+      }
+      if (state.mode === "changeTime") {
+        if (state.slots[0] === state.originSlot) { toast("يرجى اختيار موعد جديد"); return; }
+        state.pendingNewSlot = state.slots[0];
+        render();
+        return;
+      }
+      go("confirm");
+    }
+    function cancelChangeTime() {
+      state.pendingNewSlot = null;
+      render();
+    }
+    function confirmChangeTime() {
+      if (state.mode === "lessonTime") {
+        const les = lesson(state.editLessonId);
+        if (!les || !state.pendingNewSlot) return;
+        applySlotToLesson(les, state.pendingNewSlot);
+        state.mineDate = les.date;
+        toast("تم تحديث موعد هذه الحصة");
+        go("home");
+        return;
+      }
+      const p = state.plans.find(x => x.id === state.editId);
+      if (!p || !state.pendingNewSlot) return;
+      p.slots = [state.pendingNewSlot];
+      toast("تم تحديث الموعد الثابت");
+      go("home");
+    }
+    function timeConfirmHtml() {
+      const oldT = state.mode === "lessonTime" ? formatOnce(state.originSlot) : formatSlotsLines([state.originSlot])[0];
+      const newT = state.mode === "lessonTime" ? formatOnce(state.pendingNewSlot) : formatSlotsLines([state.pendingNewSlot])[0];
+      const t = teacher(state.teacherId);
+      const sub = state.mode === "lessonTime"
+        ? `تُعدَّل هذه الحصة فقط. المعلم ${t.name} لا يتغيّر`
+        : `المعلم ${t.name} يبقى كما هو`;
+      return `<div class="mask on center" onclick="if(event.target===this)cancelChangeTime()">
+        <div class="dialog">
+          <div class="dialog-title">تأكيد تغيير الموعد؟</div>
+          <div class="dialog-sub">${sub}</div>
+          <div class="swap stack">
+            <div class="swap-side">
+              <div class="lab">سيُستبدل</div>
+              <div class="nm">${oldT}</div>
+            </div>
+            <div class="swap-arrow">↓</div>
+            <div class="swap-side">
+              <div class="lab">الاختيار الجديد</div>
+              <div class="nm">${newT}</div>
+            </div>
+          </div>
+          <div class="dialog-acts">
+            <button class="btn btn-ghost" onclick="cancelChangeTime()">إلغاء</button>
+            <button class="btn btn-primary" onclick="confirmChangeTime()">تأكيد التغيير</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    function confirmCreate() {
+      state.slots.forEach((slot, i) => {
+        const [w, tm] = slot.split("-");
+        state.plans.push({
+          id: "p" + Date.now() + "-" + i,
+          teacherId: state.teacherId,
+          slots: [slot],
+          paused: false
+        });
+        state.lessons.push({
+          id: "l" + Date.now() + "-" + i,
+          teacherId: state.teacherId,
+          date: weekdayToDate(w),
+          time: tm,
+          weekday: w,
+          type: "fixed",
+          title: "حصة ثابتة",
+          level: "1v1"
+        });
+      });
+      go("success");
+    }
+    function startChangeTeacher(id) {
+      const p = state.plans.find(x => x.id === id);
+      state.mode = "changeTeacher";
+      state.editId = id;
+      state.teacherId = p.teacherId;
+      state.search = "";
+      go("teacher");
+    }
+    function startChangeTime(id) {
+      const p = state.plans.find(x => x.id === id);
+      state.mode = "changeTime";
+      state.editId = id;
+      state.teacherId = p.teacherId;
+      state.originSlot = p.slots[0];
+      state.slots = [];
+      state.day = state.originSlot ? state.originSlot.split("-")[0] : "周五";
+      go("time");
+    }
+    function startLessonChangeTime(id) {
+      const les = lesson(id);
+      state.mode = "lessonTime";
+      state.editLessonId = id;
+      state.teacherId = les.teacherId;
+      state.originSlot = lessonSlotKey(les);
+      state.slots = [];
+      state.keepSlot = null;
+      state.knownFullSlots = [];
+      state.day = les.weekday;
+      go("time");
+    }
+    function startLessonChangeTeacher(id, keepSlot) {
+      const les = lesson(id);
+      state.mode = "lessonTeacher";
+      state.editLessonId = id;
+      state.teacherId = les.teacherId;
+      state.keepSlot = keepSlot || lessonSlotKey(les);
+      state.search = "";
+      go("teacher");
+    }
+    function askCancelLesson(id) {
+      state.cancelFrom = state.view;
+      state.pendingLessonCancelId = id;
+      state.cancelReason = "";
+      state.cancelReasonOther = "";
+      state.view = "cancelLesson";
+      render();
+    }
+    function closeLessonCancel() {
+      const back = state.cancelFrom || "home";
+      state.pendingLessonCancelId = null;
+      state.cancelReason = "";
+      state.cancelReasonOther = "";
+      state.view = back;
+      render();
+    }
+    function pickCancelReason(id) {
+      state.cancelReason = id;
+      if (id !== "other") state.cancelReasonOther = "";
+      render();
+    }
+    function canConfirmCancelLesson() {
+      if (!state.cancelReason) return false;
+      if (state.cancelReason === "other" && !state.cancelReasonOther.trim()) return false;
+      return true;
+    }
+    function confirmCancelLesson() {
+      if (!canConfirmCancelLesson()) {
+        toast(state.cancelReason === "other" ? "يرجى كتابة سبب الإلغاء" : "يرجى اختيار سبب الإلغاء");
+        return;
+      }
+      const id = state.pendingLessonCancelId;
+      const les = lesson(id);
+      state.lessons = state.lessons.filter(x => x.id !== id);
+      state.pendingLessonCancelId = null;
+      state.cancelReason = "";
+      state.cancelReasonOther = "";
+      toast(les && les.type === "fixed" ? "أُلغيت هذه الحصة. الأسبوع القادم يُحجز كالمعتاد" : "أُلغيت هذه الحصة");
+      go("home");
+    }
+    function renderCancelLesson() {
+      const les = lesson(state.pendingLessonCancelId);
+      if (!les) return renderMine();
+      const t = teacher(les.teacherId);
+      const hit = WEEK.find(x => x.date === les.date);
+      const day = hit ? (hit.n + " أغسطس") : les.date;
+      const when = day + " | " + dayAr(les.weekday) + " | " + les.time;
+      const reasons = CANCEL_REASONS.map(r => {
+        const on = state.cancelReason === r.id;
+        const extra = r.id === "other" && on
+          ? `<textarea id="cancelOther" class="reason-other" placeholder="يرجى كتابة سبب الإلغاء" oninput="state.cancelReasonOther=this.value;var b=document.getElementById('cancelOk');if(b)b.disabled=!this.value.trim()">${escapeHtml(state.cancelReasonOther)}</textarea>`
+          : "";
+        return `<button class="reason ${on?"on":""}" onclick="pickCancelReason('${r.id}')">
+            <span>${r.label}</span>
+            <span class="radio"></span>
+          </button>${extra}`;
+      }).join("");
+      const ok = canConfirmCancelLesson();
+      return `<div class="cancel-page">
+        <div class="nav">
+          <button class="back"></button>
+          <div class="title">إلغاء هذه الحصة؟</div>
+          <button class="right" onclick="closeLessonCancel()">✕</button>
+        </div>
+        <div class="scroll">
+          <div class="csec">
+            <div class="csec-h"><span class="dot"></span>تفاصيل الحصة</div>
+            <div class="cinfo">
+              ${avatarHtml(t, false)}
+              <div>
+                <div class="when">${when}</div>
+                <div class="who">${t.name}</div>
+              </div>
+            </div>
+            ${les.type === "fixed" ? '<div class="cnote">تُلغى هذه الحصة فقط. الأسبوع القادم يُحجز حسب الخطة الأسبوعية.</div>' : ""}
+          </div>
+          <div class="csec">
+            <div class="csec-h"><span class="dot"></span>سبب الإلغاء</div>
+            ${reasons}
+          </div>
+        </div>
+        <div class="cancel-dock">
+          <button class="btn btn-danger-ghost" onclick="closeLessonCancel()">لاحقاً</button>
+          <button class="btn btn-danger" id="cancelOk" ${ok ? "" : "disabled"} onclick="confirmCancelLesson()">تأكيد</button>
+        </div>
+      </div>`;
+    }
+    function closeBlocked() {
+      state.pendingBlockedSlot = null;
+      render();
+    }
+    function pickOtherTimeAfterBlock() {
+      if (state.pendingBlockedSlot && !state.knownFullSlots.includes(state.pendingBlockedSlot)) {
+        state.knownFullSlots.push(state.pendingBlockedSlot);
+      }
+      state.pendingBlockedSlot = null;
+      state.slots = [];
+      render();
+    }
+    function switchTeacherKeepTime() {
+      const slot = state.pendingBlockedSlot;
+      const id = state.editLessonId;
+      startLessonChangeTeacher(id, slot);
+    }
+    function blockedHtml() {
+      const t = teacher(state.teacherId);
+      const [d, tm] = (state.pendingBlockedSlot || "").split("-");
+      return `<div class="mask on center" onclick="if(event.target===this)closeBlocked()">
+        <div class="dialog">
+          <div class="dialog-title">المعلم غير متاح في هذا الموعد</div>
+          <div class="dialog-sub">${t.name} · ${dayAr(d)} ${tm} محجوز بالكامل</div>
+          <div class="dialog-acts" style="flex-direction:column">
+            <button class="btn btn-primary" onclick="pickOtherTimeAfterBlock()">اختر موعداً متاحاً للمعلم</button>
+            <button class="btn btn-ghost" onclick="switchTeacherKeepTime()">غيّر المعلم لهذا الموعد</button>
+          </div>
+          <button class="linkish" onclick="go('home')">إلغاء</button>
+        </div>
+      </div>`;
+    }
+    function togglePause(id) {
+      const p = state.plans.find(x => x.id === id);
+      p.paused = !p.paused;
+      state.sheetId = null;
+      toast(p.paused ? "تم الإيقاف. لن تُحجز الحصة التالية تلقائياً" : "تم استئناف الحصة الثابتة");
+      render();
+    }
+    function askCancelPlan(id) {
+      state.sheetId = null;
+      state.pendingCancelId = id;
+      render();
+    }
+    function closeCancelConfirm() {
+      state.pendingCancelId = null;
+      render();
+    }
+    function confirmCancelPlan() {
+      const id = state.pendingCancelId;
+      state.plans = state.plans.filter(x => x.id !== id);
+      state.pendingCancelId = null;
+      toast("أُلغيت هذه الخطة");
+      render();
+    }
+    function cancelConfirmHtml() {
+      const p = state.plans.find(x => x.id === state.pendingCancelId);
+      if (!p) return "";
+      const t = teacher(p.teacherId);
+      const time = formatSlotsLines(p.slots)[0];
+      return `<div class="mask on center" onclick="if(event.target===this)closeCancelConfirm()">
+        <div class="dialog">
+          <div class="dialog-title">إلغاء هذه الخطة؟</div>
+          <div class="dialog-sub">بعد الإلغاء لن تُحجز الحصة تلقائياً. الخطط الأخرى لا تتأثر.</div>
+          <div class="swap stack">
+            <div class="swap-side">
+              ${avatarHtml(t, false)}
+              <div class="nm">${t.name}</div>
+              <div class="lab" style="margin-top:6px">${time}</div>
+            </div>
+          </div>
+          <div class="dialog-acts">
+            <button class="btn btn-ghost" onclick="closeCancelConfirm()">لاحقاً</button>
+            <button class="btn btn-danger" onclick="confirmCancelPlan()">تأكيد الإلغاء</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    function sendMsg(text) {
+      state.messages.push({ from:"me", text });
+      state.messages.push({ from:"advisor", text:"تم الاستلام. سيرد المشرف التعليمي خلال ساعات العمل. يمكنك إضافة المعلم والموعد المطلوبين." });
+      render();
+    }
+    function sendTyped() {
+      const el = $("#msgInput");
+      const v = (el && el.value || "").trim();
+      if (!v) return;
+      sendMsg(v);
+    }
+    function escapeAttr(s) {
+      return String(s).replace(/"/g, "&quot;");
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+    function render() {
+      const active = document.activeElement;
+      const keepSearch = active && active.classList && active.classList.contains("search");
+      const caret = keepSearch ? active.selectionStart : null;
+      const map = {
+        home: renderHome,
+        teacher: renderTeacher,
+        detail: renderDetail,
+        time: renderTime,
+        confirm: renderConfirm,
+        success: renderSuccess,
+        advisor: renderAdvisor,
+        lesson: renderLesson,
+        cancelLesson: renderCancelLesson,
+        messages: renderMessages
+      };
+      $("#app").innerHTML = (map[state.view] || renderHome)();
+      if (state.pendingNewTeacherId) {
+        $("#app").insertAdjacentHTML("beforeend", changeConfirmHtml());
+      }
+      if (state.pendingNewSlot) {
+        $("#app").insertAdjacentHTML("beforeend", timeConfirmHtml());
+      }
+      if (state.pendingCancelId) {
+        $("#app").insertAdjacentHTML("beforeend", cancelConfirmHtml());
+      }
+      if (state.pendingBlockedSlot) {
+        $("#app").insertAdjacentHTML("beforeend", blockedHtml());
+      }
+      if (keepSearch) {
+        const el = $(".search");
+        if (el) {
+          el.focus();
+          const pos = caret == null ? el.value.length : caret;
+          el.setSelectionRange(pos, pos);
+        }
+      }
+    }
+    render();
+  </script>
+</body>
+</html>
