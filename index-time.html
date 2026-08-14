@@ -1719,7 +1719,7 @@
         ? lessonOnceHint()
         : (state.mode === "changeTeacher"
           ? `<div class="hint">上课时间保持不变，只更换老师。</div>`
-          : (creating && keep ? `<div class="hint">只展示 ${formatSlotsLines([keep])[0]} 有空的老师。</div>` : ""));
+          : "");
       const locked = creating && keep ? `<div class="locked">
           <div><b>${formatSlotsLines([keep])[0]}</b><div class="pmeta">每周循环 · 25 分钟</div></div>
           <button class="chg" onclick="go('time')">更换</button>
