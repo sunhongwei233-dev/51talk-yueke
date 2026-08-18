@@ -99,7 +99,7 @@
     }
     .screen { display: none; height: 100%; flex-direction: column; }
     .screen.on { display: flex; }
-    .nav, .tabs, .bottom-nav, .dock, .stepper, .hint, .search, .locked, .credits, .composer, .days, .month-row, .week-row, .quick.bottom {
+    .nav, .tabs, .bottom-nav, .dock, .stepper, .hint, .search, .locked, .book-mode, .credits, .composer, .days, .month-row, .week-row, .quick.bottom {
       flex-shrink: 0;
     }
     .nav {
@@ -613,6 +613,31 @@
     .locked .chg {
       margin-left: auto; border: none; background: none;
       color: #C9A100; font-weight: 650; font-size: 13px; cursor: pointer; font-family: inherit;
+    }
+    .book-mode {
+      display: flex;
+      margin: 10px 16px 0;
+      background: #F0F0F0;
+      border-radius: 10px;
+      padding: 3px;
+      flex-shrink: 0;
+    }
+    .book-mode button {
+      flex: 1;
+      height: 36px;
+      border: none;
+      background: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 650;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .book-mode button.on {
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 0 1px 2px rgba(0,0,0,.06);
     }
     .days {
       display: flex;
@@ -1269,6 +1294,7 @@
       freeTab: "pick",
       bookId: "b1",
       bookSheet: false,
+      bookFrom: "fixed",
       advisorFrom: "home",
       helpStarted: false,
       helpQid: null,
@@ -1377,6 +1403,9 @@
         return `<div class="${cls}"><div class="bar"></div>${k} ${l}</div>`;
       }).join("")}</div>`;
     }
+    function showBookStepper() {
+      return state.bookFrom !== "free";
+    }
     function bottomNav() {
       const tab = state.view === "messages" ? "messages" : "schedule";
       return `<div class="bottom-nav">
@@ -1464,7 +1493,7 @@
       }).join("") : `<div class="ph">这一天没有课</div>`;
       return `${navBar("课表", { back:false, advisor:false })}
         ${homeTabs()}
-        <div class="month-row"><span>2026年08月</span><button class="go-book">去约课</button></div>
+        <div class="month-row"><span>2026年08月</span><button class="go-book" onclick="startFreeBook()">去约课</button></div>
         <div class="week-row">${week}</div>
         <div class="scroll">${cards}<div style="height:12px"></div></div>
         ${bottomNav()}`;
@@ -1621,10 +1650,9 @@
     function teacherCard(t, extra="") {
       const free = state.mode === "free";
       const cta = free
-        ? `<button class="detail-link" onclick="event.stopPropagation();openDetail('${t.id}')">查看详情</button>
-          <button class="book-btn" onclick="event.stopPropagation();pickTeacher('${t.id}')">约课</button>`
+        ? `<button class="book-btn" onclick="event.stopPropagation();pickTeacher('${t.id}')">约课</button>`
         : `<button class="book-btn" onclick="event.stopPropagation();openDetail('${t.id}')">查看详情</button>`;
-      return `<div class="tcard" onclick="pickTeacher('${t.id}')">
+      return `<div class="tcard" onclick="${free ? `openDetail('${t.id}')` : `pickTeacher('${t.id}')`}">
         <div class="tcard-main">
           ${avatarHtml(t, t.fav)}
           <div class="tmeta">
@@ -1693,7 +1721,7 @@
       const hint = state.mode === "lessonTeacher"
         ? lessonOnceHint()
         : (state.mode === "changeTeacher" ? `<div class="hint">上课时间保持不变，只更换老师。</div>` : "");
-      return `${navBar(title, changing ? { advisor:false } : {})}${changing ? "" : stepper(1)}
+      return `${navBar(title, changing ? { advisor:false } : {})}${changing || !showBookStepper() ? "" : stepper(1)}
         ${hint}
         <input class="search" placeholder="搜索老师姓名" value="${escapeAttr(state.search)}" oninput="state.search=this.value;render()">
         <div class="scroll">${body}<div style="height:16px"></div></div>
@@ -1716,7 +1744,7 @@
       } else {
         body = shown.map(t => teacherCard(t, extra(t))).join("");
       }
-      return `${navBar("选老师")}${stepper(1)}
+      return `${navBar("选老师")}
         <div class="tabs free-tabs">
           <button class="${tab==="pick"?"active":""}" onclick="state.freeTab='pick';render()">优选</button>
           <button class="${tab==="global"?"active":""}" onclick="state.freeTab='global';render()">全球</button>
@@ -1770,15 +1798,19 @@
           ? `<button class="count tap" onclick="openSlotsSheet()">已选 ${state.slots.length} 个时段 <span class="chev">⌃</span></button>`
           : `<div class="count">${isFree ? "请选择至少一个时间" : "请选择至少一个每周时段"}</div>`);
       const navTitle = isFree ? "选时间" : (replaceTime ? "换时间" : "选时间");
-      const showStepper = !replaceTime;
       const chgBtn = replaceTime ? "" : `<button class="chg" onclick="go('teacher')">更换</button>`;
       const nextLabel = replaceTime ? "确认更换时间" : "下一步";
-      return `${navBar(navTitle)}${showStepper ? stepper(2) : ""}
+      const modeSwitch = (!replaceTime && state.bookFrom === "free") ? `<div class="book-mode">
+          <button class="${isFree?"on":""}" onclick="switchBookMode('free')">自由约课</button>
+          <button class="${isFree?"":"on"}" onclick="switchBookMode('create')">固定约课</button>
+        </div>` : "";
+      return `${navBar(navTitle)}${(!replaceTime && !isFree && showBookStepper()) ? stepper(2) : ""}
         <div class="locked">
           ${avatarHtml(t, t.fav)}
           <div><b>${t.name}</b><div class="pmeta">${t.exp} · ★ ${t.rating}</div></div>
           ${chgBtn}
         </div>
+        ${modeSwitch}
         ${hint}
         <div class="days">${days}</div>
         <div class="scroll">
@@ -1795,7 +1827,7 @@
       if (state.mode === "free") return renderFreeConfirm();
       const t = teacher(state.teacherId);
       const lines = formatSlotsLines(state.slots);
-      return `${navBar("确认固定")}${stepper(3)}
+      return `${navBar("确认固定")}${showBookStepper() ? stepper(3) : ""}
         <div class="scroll">
           <div class="card">
             <div class="row"><span class="k">老师</span><span class="teacher-val">${avatarHtml(t, false)}<span>${t.name}</span></span></div>
@@ -1822,7 +1854,7 @@
               <span style="font-weight:700">${n} 节</span>
             </div>
             ${state.slots.map(s => `<div class="rule"><div class="t">${formatOnce(s)}</div><div class="s">单次 · 25 分钟</div></div>`).join("")}`;
-      return `${navBar("确认约课")}${stepper(3)}
+      return `${navBar("确认约课")}
         <div class="scroll">
           <div class="card">
             <div class="row">
@@ -2137,6 +2169,7 @@
       state.keepSlot = null;
       state.editLessonId = null;
       state.knownFullSlots = [];
+      state.bookFrom = "fixed";
       go("teacher");
     }
     function startFreeBook() {
@@ -2153,7 +2186,14 @@
       state.freeTab = "pick";
       state.bookId = "b1";
       state.bookSheet = false;
+      state.bookFrom = "free";
       go("teacher");
+    }
+    function switchBookMode(mode) {
+      if (state.mode === mode) return;
+      if (mode !== "free" && mode !== "create") return;
+      state.mode = mode;
+      render();
     }
     function pickTeacher(id) {
       if (state.mode === "changeTeacher" || state.mode === "lessonTeacher") {
