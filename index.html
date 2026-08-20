@@ -294,6 +294,7 @@
       margin-top: 16px;
       margin-bottom: 8px;
     }
+    .scroll > .benefits { margin-left: 16px; margin-right: 16px; margin-bottom: 20px; }
     .benefits .cap {
       font-size: 13px;
       font-weight: 700;
@@ -306,6 +307,55 @@
       line-height: 1.65;
       padding: 4px 4px 10px;
     }
+    .explain-title {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 10px 8px 4px;
+      color: var(--ink);
+    }
+    .explain-item { padding: 8px 4px 6px; }
+    .explain-q {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .explain-q::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--yellow);
+      flex-shrink: 0;
+    }
+    .explain-a {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .explain-bubble {
+      flex: 1;
+      background: #F4F4F4;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.65;
+      text-align: left;
+    }
+    .explain-bubble .em { color: var(--danger); font-weight: 700; }
+    .explain-av {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #EEE;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .explain-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .ben {
       display: flex;
       gap: 10px;
@@ -990,6 +1040,7 @@
     }
     .sheet button.danger { color: var(--danger); }
     .sheet button.cancel { border: none; color: var(--muted); margin-top: 8px; background: var(--bg); border-radius: 12px; }
+    .sheet button.cancel.highlight { background: var(--yellow); color: var(--ink); font-weight: 700; }
     .sheet.slots-sheet { padding: 10px 16px 20px; max-height: 70%; display: flex; flex-direction: column; }
     .sheet.slots-sheet .btn-primary {
       width: 100%;
@@ -1527,6 +1578,53 @@
           </div>
         </div>`;
     }
+    function explainPlanHtml() {
+      return `<div class="benefits whatis">
+              <div class="explain-title">固定学习计划说明</div>
+              <div class="explain-item">
+                <div class="explain-q">什么是固定学习计划？</div>
+                <div class="explain-a">
+                  <div class="explain-bubble">加入固定学习计划，系统会每周按照您选择的老师和时间，为您自动预约课程。</div>
+                  <div class="explain-av"><img src="avatars/emily.jpg" alt=""></div>
+                </div>
+              </div>
+              <div class="explain-item">
+                <div class="explain-q">为什么要加入固定学习计划？</div>
+                <div class="explain-a">
+                  <div class="explain-bubble">每周固定上课，更好坚持；提前锁定心仪老师，不用每周抢课。</div>
+                  <div class="explain-av"><img src="avatars/emily.jpg" alt=""></div>
+                </div>
+              </div>
+              <div class="explain-item">
+                <div class="explain-q">如何加入固定学习计划？</div>
+                <div class="explain-a">
+                  <div class="explain-bubble">在「固定计划」点「开始设置固定约课」或「新增固定约课」。先选老师（收藏过的排在最前），再选一个或多个每周时段，确认后即加入。</div>
+                  <div class="explain-av"><img src="avatars/emily.jpg" alt=""></div>
+                </div>
+              </div>
+              <div class="explain-item">
+                <div class="explain-q">学员临时有事如何取消？</div>
+                <div class="explain-a">
+                  <div class="explain-bubble">打开「我的课程」，点这一节的「取消」，选择原因后确认。只取消这一节，每周固定计划不变。</div>
+                  <div class="explain-av"><img src="avatars/emily.jpg" alt=""></div>
+                </div>
+              </div>
+              <div class="explain-item">
+                <div class="explain-q">老师临时有事如何处理？</div>
+                <div class="explain-a">
+                  <div class="explain-bubble">老师可能有突发事件无法按规定时间来上课，我们会帮您自动从您收藏的老师中优先代课。建议您可以多收藏一些喜爱的老师。</div>
+                  <div class="explain-av"><img src="avatars/emily.jpg" alt=""></div>
+                </div>
+              </div>
+              <div class="explain-item">
+                <div class="explain-q">如何修改或取消固定学习计划？</div>
+                <div class="explain-a">
+                  <div class="explain-bubble">在「固定计划」卡片上可换老师、换时间。点右上角 ⋯，可以取消整条计划。需要帮忙也可以联系班主任。</div>
+                  <div class="explain-av"><img src="avatars/emily.jpg" alt=""></div>
+                </div>
+              </div>
+            </div>`;
+    }
     function renderEmpty() {
       return `${navBar("课表", { back:false, advisor:false })}
         ${homeTabs()}
@@ -1543,17 +1641,7 @@
             <button class="btn btn-primary" onclick="startCreate()">开始设置固定约课</button>
             <div style="height:10px"></div>
             <button class="btn btn-ghost" onclick="openAdvisor()">联系班主任</button>
-            <div class="benefits whatis">
-              <div class="cap">什么是固定学习计划</div>
-              <div class="body">一次性设定每周上课时间和老师（例如每周五 17:00），系统按这个周期自动帮你占课，不用每周手动抢课。每上完 1 节扣 1 次次卡，并自动顺延到下一周。可以随时换老师、换时间，或暂停、取消某一条计划。</div>
-            </div>
-            <div class="benefits">
-              <div class="cap">为什么要设置固定计划</div>
-              <div class="ben"><div class="n">1</div><div><div class="t">养成学习习惯</div><div class="d">不用每周想约不约、约谁，固定节奏更容易坚持。</div></div></div>
-              <div class="ben"><div class="n">2</div><div><div class="t">锁定心仪老师</div><div class="d">热门老师课位容易秒空，固定约课等于提前长期占坑。</div></div></div>
-              <div class="ben"><div class="n">3</div><div><div class="t">方便家庭排期</div><div class="d">「每周五 17:00」可预期，接送和其他兴趣班更好安排。</div></div></div>
-              <div class="ben"><div class="n">4</div><div><div class="t">多时段可组合</div><div class="d">工作日晚上、周末上午可以拼在同一位老师下。</div></div></div>
-            </div>
+            ${explainPlanHtml()}
           </div>
         </div>
         ${bottomNav()}`;
@@ -1599,19 +1687,17 @@
             <div style="height:10px"></div>
             <button class="btn btn-ghost" onclick="openAdvisor()">联系班主任</button>
           </div>
+          ${explainPlanHtml()}
         </div>
         ${bottomNav()}
         ${sheetHtml()}`;
     }
     function sheetHtml() {
       if (!state.sheetId) return `<div class="mask"></div>`;
-      const p = state.plans.find(x => x.id === state.sheetId);
-      const pauseLabel = p && p.paused ? "恢复这条固定约课" : "暂停这条固定约课";
       return `<div class="mask on" onclick="if(event.target===this){state.sheetId=null;render()}">
         <div class="sheet">
-          <button onclick="togglePause('${state.sheetId}')">${pauseLabel}</button>
           <button class="danger" onclick="askCancelPlan('${state.sheetId}')">取消这条固定计划</button>
-          <button class="cancel" onclick="state.sheetId=null;render()">关闭</button>
+          <button class="cancel highlight" onclick="state.sheetId=null;render()">关闭</button>
         </div>
       </div>`;
     }
